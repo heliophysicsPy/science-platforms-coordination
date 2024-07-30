@@ -4,7 +4,7 @@ FROM public.ecr.aws/q3h7b4o8/heliocloud/helio-notebook:2024.05.15
 WORKDIR /notebook
 COPY . /notebook
 
-RUN pip install --default-timeout=100 -r requirements.txt
+RUN pip install jupyterlab
 
 # Install missing ESA Datalabs packages
 RUN pip install \
@@ -43,4 +43,5 @@ RUN pip install \
     ypy-websocket==0.8.4 \
     zstandard==0.19.0
 
+EXPOSE 8888
 CMD ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--allow-root"]
