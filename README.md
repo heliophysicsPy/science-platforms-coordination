@@ -1,3 +1,3 @@
-# science-platforms-coordination
+# Science Platforms Coordination Base Image
 
-Repo to hold the Dockerfile for a base image to be used by the Science Platforms Coordination IHDEA working group.
+A base Docker image to be used by the Science Platforms Coordination IHDEA working group.
