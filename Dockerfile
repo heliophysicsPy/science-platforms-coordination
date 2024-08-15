@@ -7,7 +7,7 @@ USER root
 RUN sh install_cdflib.sh
 ENV CDF_LIB=/usr/lib64/cdf/lib
 
-# Cleanup temporary data
+# Clean up temporary data
 RUN apt clean \
    && apt autoclean \
    && apt -y autoremove \
