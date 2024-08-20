@@ -1,28 +1,14 @@
-ARG PANGEO_BASE_IMAGE_TAG=2024.08.07
-FROM pangeo/base-image:${PANGEO_BASE_IMAGE_TAG}
+ARG UBUNTU_VERSION=20.04
+ARG REGISTRY=scidockreg.esac.esa.int:62510
+FROM ${REGISTRY}/datalabs/datalabs_base:${UBUNTU_VERSION}
 
-USER root
+# Set the environment to non-interactive to avoid prompts during package installations
+ENV DEBIAN_FRONTEND noninteractive
 
-# install CDFLIB
-RUN sh install_cdflib.sh
-ENV CDF_LIB=/usr/lib64/cdf/lib
+# Update and install essential packages (if needed)
+RUN apt-get update && apt-get install -y \
+    bash \
+    && rm -rf /var/lib/apt/lists/*
 
-# Clean up temporary data
-RUN apt clean \
-   && apt autoclean \
-   && apt -y autoremove \
-   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-   && conda clean -afy
-
-# Clean up: remove all source files except README.md
-RUN find /home/jovyan/ -maxdepth 1 -type f ! -name 'README.md' -exec rm -f {} +
-
-USER $NB_USER
-
-# create PyHC package data dirs (needed?)
-RUN mkdir -p $NB_USER/.sunpy $NB_USER/.spacepy/data
-
-EXPOSE 8888
-
-# CMD to run JupyterLab (this will be passed to exec "$@" in the start script)
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--allow-root"]
+# Launch a terminal session
+CMD ["/bin/bash"]
