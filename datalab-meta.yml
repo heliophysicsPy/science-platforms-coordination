@@ -1,10 +1,10 @@
-title: shawn_ubuntu_20
-alternateName: shawn_ubuntu_20
-abstract: Trying to create a Datalab from ESA's base Ubuntu 20.04 image.
+title: shawn_pangeo
+alternateName: shawn_pangeo
+abstract: Trying to create a Datalab similar to Pangeo from ESA's base Ubuntu 20.04 image.
 contactPoint.email: shawn.polson@lasp.colorado.edu
 creator.name: Shawn Polson
-version: 0.0.1
+version: 0.0.2
 description: > 
-  Shawn trying to create a Datalab from ESA's base Ubuntu 20.04 image.
+  Shawn trying to create a Datalab similar to Pangeo's base image from ESA's base Ubuntu 20.04 image.
 distribution.license: None
 language: english
