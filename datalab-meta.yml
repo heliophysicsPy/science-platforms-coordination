@@ -1,10 +1,10 @@
-title: shawn_sci_plat
-alternateName: shawn_sci_plat
-abstract: Trying to create a Datalab similar to Pangeo from ESA's base Ubuntu 20.04 image, using support-supplied files.
+title: shawn_sci_plat2
+alternateName: shawn_sci_plat2
+abstract: Trying to create a Datalab similar to HelioCloud's base image from ESA's base Ubuntu 20.04 image.
 contactPoint.email: shawn.polson@lasp.colorado.edu
 creator.name: Shawn Polson
-version: 0.0.6
+version: 0.0.8
 description: > 
-  Shawn trying to create a Datalab similar to Pangeo's base image from ESA's base Ubuntu 20.04 image, using support-supplied files..
+  Shawn trying to create a Datalab similar to Pangeo's base image from ESA's base Ubuntu 20.04 image.
 distribution.license: None
 language: english
