@@ -51,10 +51,12 @@ COPY jupyter_notebook_config.py /etc/
 COPY run.sh /opt/datalab/
 
 # Copy HelioCloud files
-COPY apt.txt /tmp/apt.txt
-COPY environment.yml /tmp/environment.yml
-COPY install_cdflib.sh /tmp/install_cdflib.sh
-COPY README.md /tmp/README.md
+COPY apt.txt /tmp/
+COPY environment.yml /tmp/
+COPY install_cdflib.sh /tmp/
+COPY README.md /tmp/
+# Copy conda-lock.yml if it exists
+COPY conda-lock.yml /tmp/conda-lock.yml
 
 # Ensure the run.sh script is executable
 RUN chmod +x /opt/datalab/run.sh
@@ -66,10 +68,19 @@ RUN echo "Installing packages from apt.txt..." \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Create conda environment from environment.yml
-RUN echo "Creating conda environment from environment.yml..." \
+# Create conda environment from conda-lock.yml or environment.yml
+RUN echo "Checking for 'conda-lock.yml' or 'environment.yml'..." \
     && . ${CONDA_DIR}/etc/profile.d/conda.sh \
-    && conda env create --name ${CONDA_ENV} -f /tmp/environment.yml \
+    ; if test -f "/tmp/conda-lock.yml"; then \
+        echo "Using conda-lock.yml" \
+        && conda-lock install --name ${CONDA_ENV} /tmp/conda-lock.yml \
+    ; elif test -f "/tmp/environment.yml"; then \
+        echo "Using environment.yml" \
+        && mamba env create --name ${CONDA_ENV} -f /tmp/environment.yml \
+    ; else \
+        echo "No conda-lock.yml or environment.yml found! Exiting." \
+        && exit 1 \
+    ; fi \
     && conda clean -afy \
     && find ${CONDA_DIR} -follow -type f -name '*.a' -delete \
     && find ${CONDA_DIR} -follow -type f -name '*.js.map' -delete \
