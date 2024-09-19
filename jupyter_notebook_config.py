@@ -15,3 +15,6 @@ c.NotebookApp.tornado_settings = {  # noqa
 c.NotebookApp.terminado_settings = {  # noqa
     "shell_command": ["bash", "-i"]
 }
+
+# Configure nb_conda_kernels to avoid registering Jupyter kernels in our conda environment again.
+c.CondaKernelSpecManager.env_filter = f'.*envs/{os.environ["CONDA_ENV"]}.*'
