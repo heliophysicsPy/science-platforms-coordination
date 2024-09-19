@@ -50,47 +50,51 @@ RUN echo ". ${CONDA_DIR}/etc/profile.d/conda.sh ; conda activate ${CONDA_ENV}" >
 COPY jupyter_notebook_config.py /etc/
 COPY run.sh /opt/datalab/
 
-# Copy HelioCloud files
-COPY apt.txt /tmp/
-COPY environment.yml /tmp/
-COPY install_cdflib.sh /tmp/
-COPY README.md /tmp/
-# Copy conda-lock.yml if it exists
-COPY conda-lock.yml /tmp/conda-lock.yml
+# Copy the entire build context to /tmp/build (similar to Pangeo's approach, expecting the files we check for below)
+COPY . /tmp/build/
 
 # Ensure the run.sh script is executable
 RUN chmod +x /opt/datalab/run.sh
 
-# Install apt packages specified in apt.txt
-RUN echo "Installing packages from apt.txt..." \
-    && apt-get update --fix-missing > /dev/null \
-    && xargs -a /tmp/apt.txt apt-get install -y \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Install apt packages specified in apt.txt if it exists
+RUN echo "Checking for 'apt.txt'..." \
+    && if [ -f "/tmp/build/apt.txt" ]; then \
+        echo "Installing packages from apt.txt..." \
+        && apt-get update --fix-missing > /dev/null \
+        && xargs -a /tmp/build/apt.txt apt-get install -y \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/* \
+    ; else \
+        echo "No apt.txt found, skipping apt packages installation." \
+    ; fi
 
-# Create conda environment from conda-lock.yml or environment.yml
+# Create conda environment from conda-lock.yml or environment.yml if they exist
 RUN echo "Checking for 'conda-lock.yml' or 'environment.yml'..." \
     && . ${CONDA_DIR}/etc/profile.d/conda.sh \
-    ; if test -f "/tmp/conda-lock.yml"; then \
+    ; if [ -f "/tmp/build/conda-lock.yml" ]; then \
         echo "Using conda-lock.yml" \
-        && conda-lock install --name ${CONDA_ENV} /tmp/conda-lock.yml \
-    ; elif test -f "/tmp/environment.yml"; then \
+        && conda-lock install --name ${CONDA_ENV} /tmp/build/conda-lock.yml \
+    ; elif [ -f "/tmp/build/environment.yml" ]; then \
         echo "Using environment.yml" \
-        && mamba env create --name ${CONDA_ENV} -f /tmp/environment.yml \
+        && mamba env create --name ${CONDA_ENV} -f /tmp/build/environment.yml \
     ; else \
-        echo "No conda-lock.yml or environment.yml found! Exiting." \
-        && exit 1 \
+        echo "No conda-lock.yml or environment.yml found! Proceeding without conda environment creation." \
     ; fi \
     && conda clean -afy \
     && find ${CONDA_DIR} -follow -type f -name '*.a' -delete \
     && find ${CONDA_DIR} -follow -type f -name '*.js.map' -delete \
     ; if ls ${NB_PYTHON_PREFIX}/lib/python*/site-packages/bokeh/server/static > /dev/null 2>&1; then \
-    find ${NB_PYTHON_PREFIX}/lib/python*/site-packages/bokeh/server/static -follow -type f -name '*.js' ! -name '*.min.js' -delete \
+        find ${NB_PYTHON_PREFIX}/lib/python*/site-packages/bokeh/server/static -follow -type f -name '*.js' ! -name '*.min.js' -delete \
     ; fi
 
-# Install cdflib
-RUN chmod +x /tmp/install_cdflib.sh \
-    && /tmp/install_cdflib.sh
+# Install cdflib if install_cdflib.sh exists
+RUN if [ -f "/tmp/build/install_cdflib.sh" ]; then \
+        echo "Installing cdflib..." \
+        && chmod +x /tmp/build/install_cdflib.sh \
+        && /tmp/build/install_cdflib.sh \
+    ; else \
+        echo "No install_cdflib.sh found, skipping cdflib installation." \
+    ; fi
 
 # Set environment variable for CDF_LIB
 ENV CDF_LIB=/usr/lib64/cdf/lib
@@ -104,7 +108,11 @@ RUN apt clean \
 
 # Remove all source files except README.md
 RUN mkdir -p /media/home \
-    && cp /tmp/README.md /media/home/README.md \
+    && if [ -f "/tmp/build/README.md" ]; then \
+        cp /tmp/build/README.md /media/home/README.md \
+    ; else \
+        echo "No README.md found." \
+    ; fi \
     && find /media/home/ -maxdepth 1 -type f ! -name 'README.md' -exec rm -f {} +
 
 # Create PyHC package data directories
