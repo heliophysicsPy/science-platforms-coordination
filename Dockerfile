@@ -107,7 +107,6 @@ RUN apt clean \
     && . ${CONDA_DIR}/etc/profile.d/conda.sh \
     && conda clean -afy
 
-
 # Remove all source files except README.md
 RUN mkdir -p /media/home \
     && if [ -f "/tmp/build/README.md" ]; then \
