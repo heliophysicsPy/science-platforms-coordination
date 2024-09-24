@@ -35,7 +35,7 @@ Xvfb :1 &
 # done
 debug "ENVIRONMENT => $ENVIRONMENT"
 api_emit_running
-if su - $USER -c " bash -cl \"HOME=/home/$USER $ENVIRONMENT jupyter lab --ip=0.0.0.0  $JUPYTER_DEBUG --port=$IF_main_port \
+if su - $USER -c " bash -cl \"HOME=/home/$USER jupyter lab --ip=0.0.0.0  $JUPYTER_DEBUG --port=$IF_main_port \
   --JupyterApp.config_file='/etc/jupyter_notebook_config.py' \
   --ServerApp.disable_check_xsrf=True \
   --NotebookApp.base_url=\"/datalabs/$IF_main_id\" \
