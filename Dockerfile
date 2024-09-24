@@ -1,39 +1,37 @@
-ARG JL_BASE_VERSION=stable
+ARG BASE_VERSION=0.8.0-stable
 ARG REGISTRY=scidockreg.esac.esa.int:62510
-FROM ${REGISTRY}/datalabs/datalabs_base:${JL_BASE_VERSION}-20.04
+FROM ${REGISTRY}/datalabs/datalabs_base:${BASE_VERSION}-20.04
 
 LABEL org.opencontainers.image.source=https://github.com/pangeo-data/pangeo-docker-images
 
-# Setup environment to match variables set by Pangeo's repo2docker
+# Setup environment variables to match Pangeo's repo2docker and ESA Datalabs
 ENV CONDA_ENV=notebook \
     DEBIAN_FRONTEND=noninteractive \
-    NB_USER=jovyan \
-    NB_UID=1000 \
     SHELL=/bin/bash \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     CONDA_DIR=/srv/conda \
     NB_PYTHON_PREFIX=${CONDA_DIR}/envs/${CONDA_ENV} \
-    HOME=/home/${NB_USER} \
     PATH=${NB_PYTHON_PREFIX}/bin:${CONDA_DIR}/bin:${PATH} \
     DASK_ROOT_CONFIG=${CONDA_DIR}/etc \
-    TZ=UTC
+    TZ=UTC \
+    JUPYTER_CONFIG_DIR=/root/.jupyterlab-$DATALAB_ID \
+    ENVIRONMENT=". ${CONDA_DIR}/etc/profile.d/conda.sh ; conda activate ${CONDA_ENV}"
 
-# Create the jovyan user
-RUN echo "Creating ${NB_USER} user..." \
-    && groupadd --gid ${NB_UID} ${NB_USER}  \
-    && useradd --create-home --gid ${NB_UID} --no-log-init --uid ${NB_UID} ${NB_USER} \
-    && chown -R ${NB_USER}:${NB_USER} /srv
-
-# Install basic apt packages
-RUN echo "Installing Apt-get packages..." \
-    && apt-get update --fix-missing > /dev/null \
-    && apt-get install -y apt-utils wget zip tzdata > /dev/null \
+# Install basic apt packages and python3-pip
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+        python3-pip \
+        apt-utils wget zip tzdata xvfb \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Miniforge and conda-lock as root
-USER root
+# Install pip packages for JupyterLab and Jupyter client
+RUN pip --no-cache-dir install \
+        jupyterlab==3.6.5 \
+        jupyter_client==7.1.1
+
+# Install Miniforge and conda-lock
 RUN echo "Installing Miniforge..." \
     && URL="https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
     && wget --quiet ${URL} -O installer.sh \
@@ -45,15 +43,82 @@ RUN echo "Installing Miniforge..." \
     && mamba clean -afy \
     && find ${CONDA_DIR} -follow -type f -name '*.a' -delete
 
-# Create the init_conda.sh script as root
+# Create the init_conda.sh script
 RUN echo ". ${CONDA_DIR}/etc/profile.d/conda.sh ; conda activate ${CONDA_ENV}" > /etc/profile.d/init_conda.sh
 
-# Switch back to jovyan user
-USER ${NB_USER}
-WORKDIR ${HOME}
+# Copy necessary configuration and scripts
+COPY jupyter_notebook_config.py /etc/
+COPY run.sh /opt/datalab/
 
-# Expose port 8888 for JupyterLab access
-EXPOSE 8888
+# Copy the entire build context to /tmp/build (similar to Pangeo's approach)
+COPY . /tmp/build/
 
-# Start JupyterLab by default
-CMD ["jupyter", "lab", "--ip", "0.0.0.0"]
+# Ensure the run.sh script is executable
+RUN chmod +x /opt/datalab/run.sh
+
+# Install apt packages specified in apt.txt if it exists
+RUN echo "Checking for 'apt.txt'..." \
+    && if [ -f "/tmp/build/apt.txt" ]; then \
+        echo "Installing packages from apt.txt..." \
+        && apt-get update --fix-missing > /dev/null \
+        && xargs -a /tmp/build/apt.txt apt-get install -y \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/* \
+    ; else \
+        echo "No apt.txt found, skipping apt packages installation." \
+    ; fi
+
+# Create conda environment from conda-lock.yml or environment.yml if they exist
+RUN echo "Checking for 'conda-lock.yml' or 'environment.yml'..." \
+    && . ${CONDA_DIR}/etc/profile.d/conda.sh \
+    ; if [ -f "/tmp/build/conda-lock.yml" ]; then \
+        echo "Using conda-lock.yml" \
+        && conda-lock install --name ${CONDA_ENV} /tmp/build/conda-lock.yml \
+    ; elif [ -f "/tmp/build/environment.yml" ]; then \
+        echo "Using environment.yml" \
+        && mamba env create --name ${CONDA_ENV} -f /tmp/build/environment.yml \
+    ; else \
+        echo "No conda-lock.yml or environment.yml found! Proceeding without conda environment creation." \
+    ; fi \
+    && conda clean -afy \
+    && find ${CONDA_DIR} -follow -type f -name '*.a' -delete \
+    && find ${CONDA_DIR} -follow -type f -name '*.js.map' -delete \
+    ; if ls ${NB_PYTHON_PREFIX}/lib/python*/site-packages/bokeh/server/static > /dev/null 2>&1; then \
+        find ${NB_PYTHON_PREFIX}/lib/python*/site-packages/bokeh/server/static -follow -type f -name '*.js' ! -name '*.min.js' -delete \
+    ; fi
+
+# Install cdflib if install_cdflib.sh exists
+RUN if [ -f "/tmp/build/install_cdflib.sh" ]; then \
+        echo "Installing cdflib..." \
+        && chmod +x /tmp/build/install_cdflib.sh \
+        && /tmp/build/install_cdflib.sh \
+    ; else \
+        echo "No install_cdflib.sh found, skipping cdflib installation." \
+    ; fi
+
+# Set environment variable for CDF_LIB
+ENV CDF_LIB=/usr/lib64/cdf/lib
+
+# Clean up temporary data
+RUN apt clean \
+    && apt autoclean \
+    && apt -y autoremove \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && . ${CONDA_DIR}/etc/profile.d/conda.sh \
+    && conda clean -afy
+
+# Remove all source files except README.md
+RUN mkdir -p /media/home \
+    && if [ -f "/tmp/build/README.md" ]; then \
+        cp /tmp/build/README.md /media/home/README.md \
+    ; else \
+        echo "No README.md found." \
+    ; fi \
+    && find /media/home/ -maxdepth 1 -type f ! -name 'README.md' -exec rm -f {} +
+
+# Create PyHC package data directories
+RUN mkdir -p /media/home/.sunpy /media/home/.spacepy/data
+
+CMD ["/sbin/tini", "--", "/opt/datalab/run.sh"]
+
+WORKDIR /opt/
