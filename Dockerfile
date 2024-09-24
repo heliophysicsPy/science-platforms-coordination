@@ -50,7 +50,7 @@ RUN echo ". ${CONDA_DIR}/etc/profile.d/conda.sh ; conda activate ${CONDA_ENV}" >
 COPY jupyter_notebook_config.py /etc/
 COPY run.sh /opt/datalab/
 
-# Copy the entire build context to /tmp/build (similar to Pangeo's approach, expecting the files we check for below)
+# Copy the entire build context to /tmp/build (similar to Pangeo's approach)
 COPY . /tmp/build/
 
 # Ensure the run.sh script is executable
@@ -104,7 +104,9 @@ RUN apt clean \
     && apt autoclean \
     && apt -y autoremove \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && . ${CONDA_DIR}/etc/profile.d/conda.sh \
     && conda clean -afy
+
 
 # Remove all source files except README.md
 RUN mkdir -p /media/home \
