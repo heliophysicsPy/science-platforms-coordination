@@ -1,5 +1,5 @@
-title: sci_platform
-alternateName: sci_platform
+title: heliocloud_base
+alternateName: heliocloud_base
 abstract: A Datalab similar to HelioCloud's base image built from ESA's base Ubuntu 20.04 image.
 contactPoint.email: shawn.polson@lasp.colorado.edu
 creator.name: Shawn Polson
