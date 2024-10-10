@@ -1,3 +1,4 @@
-# science-platforms-coordination
+# Science Platforms Coordination Base Image
+## (For Binder/JupyterHub)
 
-Repo to hold the Dockerfile for a base image to be used by the Science Platforms Coordination IHDEA working group.
+A Docker image containing all PyHC packages, to be used by the Science Platforms Coordination IHDEA working group. 
