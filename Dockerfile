@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Ensure the jovyan user exists and has correct permissions
 USER root
-RUN id jovyan || useradd -m -s /bin/bash -N -u 1000 jovyan && \
+RUN useradd -m -s /bin/bash -N -u 1000 jovyan && \
     chown -R jovyan:users /app && \
     cp /app/import-test.ipynb /home/jovyan/import-test.ipynb && \
     chown jovyan:users /home/jovyan/import-test.ipynb
