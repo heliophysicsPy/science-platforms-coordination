@@ -12,9 +12,8 @@ RUN useradd -m -s /bin/bash -N -u 1000 jovyan && \
     cp /app/import-test.ipynb /home/jovyan/import-test.ipynb && \
     chown jovyan:users /home/jovyan/import-test.ipynb
 
-# Pre-build the wmm2015 package
-RUN source activate pyhc-all && \
-    python -c "import wmm2015"
+# Pre-build the wmm2015 package using Bash shell
+RUN /bin/bash -c "source activate pyhc-all && python -c 'import wmm2015'"
 
 # Change ownership of the wmm2015 package directory
 RUN chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/python3.10/site-packages/wmm2015
