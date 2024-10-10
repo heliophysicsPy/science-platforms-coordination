@@ -11,5 +11,5 @@ RUN useradd -m -s /bin/bash -N -u 1000 jovyan && \
     cp /app/import-test.ipynb /home/jovyan/import-test.ipynb && \
     chown jovyan:users /home/jovyan/import-test.ipynb
 
-# Switch to the jovyan user and go back to the default working directory
+# Go back to the default working directory
 WORKDIR /home/jovyan
