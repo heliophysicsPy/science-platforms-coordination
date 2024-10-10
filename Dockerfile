@@ -1,16 +1,18 @@
 # Use the PyHC environment already in Docker Hub
 FROM spolson/pyhc-environment:v2024.10.09
 
-# Set the working directory to /app, where `import-test.ipynb` is located
-WORKDIR /app
+# Install necessary build tools
+USER root
+RUN apt-get update && apt-get install -y gcc g++ gfortran ncurses-dev build-essential cmake \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Ensure the jovyan user exists and has correct permissions
-USER root
 RUN useradd -m -s /bin/bash -N -u 1000 jovyan && \
     chown -R jovyan:users /app && \
     cp /app/import-test.ipynb /home/jovyan/import-test.ipynb && \
     chown jovyan:users /home/jovyan/import-test.ipynb
 
-# Switch to the jovyan user and go back to the default working directory
+# Switch to the jovyan user and set the working directory
 USER jovyan
 WORKDIR /home/jovyan
