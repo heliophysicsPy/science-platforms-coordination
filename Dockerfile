@@ -6,11 +6,14 @@ WORKDIR /app
 
 USER root
 
-# Ensure the jovyan user exists and has correct permissions
+# Ensure the jovyan user exists and has correct permissions, copy two notebooks from /app
 RUN useradd -m -s /bin/bash -N -u 1000 jovyan && \
     chown -R jovyan:users /app && \
     cp /app/import-test.ipynb /home/jovyan/import-test.ipynb && \
-    chown jovyan:users /home/jovyan/import-test.ipynb
+    cp /app/unit-tests.ipynb /home/jovyan/unit-tests.ipynb && \
+    chown jovyan:users /home/jovyan/import-test.ipynb && \
+    chown jovyan:users /home/jovyan/unit-tests.ipynb
+    
 
 # Pre-build the wmm2015 and wmm2020 packages using Bash shell
 RUN /bin/bash -c "source activate pyhc-all && \
