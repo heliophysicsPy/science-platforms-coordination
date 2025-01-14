@@ -15,7 +15,11 @@ RUN apt clean \
    && conda clean -afy
 
 # Clean up: remove all source files except README.md
-RUN find /home/jovyan/ -maxdepth 1 -type f ! -name 'README.md' -exec rm -f {} +
+# Clean up: remove everything in /home/jovyan except README.md and notebooks
+RUN find /home/jovyan/ -mindepth 1 -maxdepth 1 \
+    ! -name 'README.md' \
+    ! -name 'notebooks' \
+    -exec rm -rf {} +
 
 USER $NB_USER
 
