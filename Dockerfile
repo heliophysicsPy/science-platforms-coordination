@@ -14,7 +14,6 @@ RUN apt clean \
    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
    && conda clean -afy
 
-# Clean up: remove all source files except README.md
 # Clean up: remove everything in /home/jovyan except README.md and notebooks
 RUN find /home/jovyan/ -mindepth 1 -maxdepth 1 \
     ! -name 'README.md' \
