@@ -1,5 +1,7 @@
 # extra pip-based requirements to install
 # which are not captured in conda-lock file
+pyhc-core==0.0.6  # Core PyHC packages (installed first to prioritize package versions below)
+git+https://github.com/nasa/Kamodo.git  # Not in pyhc-core
 aacgmv2==2.6.3
 apexpy==2.0.1
 astroquery==0.4.7
