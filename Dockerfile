@@ -14,11 +14,12 @@ RUN useradd -m -s /bin/bash -N -u 1000 jovyan && \
     chown jovyan:users /home/jovyan/import-test.ipynb && \
     chown jovyan:users /home/jovyan/unit-tests.ipynb
     
-
 # Pre-build the wmm2015 and wmm2020 packages using Bash shell
+# Install jupyterhub package so the image would work on authenticated binderhubs
 RUN /bin/bash -c "source activate pyhc-all && \
     python -c 'import wmm2015' && \
-    python -c 'import wmm2020'"
+    python -c 'import wmm2020'" && \
+    pythom -m pip install --no-cache jupyterhub
 
 # Change ownership of the wmm2015 and wmm2020 package directories
 RUN chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/python3.10/site-packages/wmm2015 && \
