@@ -16,6 +16,7 @@ RUN useradd -m -s /bin/bash -N -u 1000 jovyan && \
     
 # Pre-build the wmm2015 and wmm2020 packages using Bash shell
 # Install jupyterhub package so the image would work on authenticated binderhubs
+# TODO: Could use this conda package (https://anaconda.org/conda-forge/jupyterhub-singleuser/) instead of instlling from pip
 RUN /bin/bash -c "source activate pyhc-all && \
     python -c 'import wmm2015' && \
     python -c 'import wmm2020'" && \
