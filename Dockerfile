@@ -24,12 +24,12 @@ RUN /bin/bash -c "source activate pyhc-all && \
 RUN conda install -c conda-forge -n pyhc-all -y jupyterhub-singleuser
 
 # Change ownership of the wmm2015 and wmm2020 package directories
-RUN chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/python3.10/site-packages/wmm2015 && \
-    chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/python3.10/site-packages/wmm2020
+RUN chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/python3.11/site-packages/wmm2015 && \
+    chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/python3.11/site-packages/wmm2020
 
 # Change ownership and permissions for savic
-RUN chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/python3.10/site-packages/savic && \
-    chmod -R u+w /opt/conda/envs/pyhc-all/lib/python3.10/site-packages/savic
+RUN chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/python3.11/site-packages/savic && \
+    chmod -R u+w /opt/conda/envs/pyhc-all/lib/python3.11/site-packages/savic
 
 # Go back to the default working directory
 WORKDIR /home/jovyan
