@@ -99,7 +99,7 @@ RUN echo "Checking for pip 'requirements.txt'..." \
 
 # Install (or reinstall) the necessary compiler toolchain packages into the conda environment for wmm2015 and wmm2020
 RUN . ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${CONDA_ENV} && \
-    mamba install -y gcc_linux-64 gxx_linux-64 && \
+    conda install -y gcc_linux-64 gxx_linux-64 && \
     conda clean -afy
 
 # Pre-build the wmm2015 and wmm2020 packages using the conda environment's Python
