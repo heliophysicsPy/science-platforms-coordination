@@ -101,6 +101,11 @@ RUN echo "Checking for pip 'requirements.txt'..." \
 RUN chown -R jovyan:users ${CONDA_DIR}/envs/${CONDA_ENV}/lib/python3.11/site-packages/savic && \
     chmod -R u+w ${CONDA_DIR}/envs/${CONDA_ENV}/lib/python3.11/site-packages/savic
 
+# Install (or reinstall) the necessary compiler toolchain packages into the conda environment for wmm2015 and wmm2020
+RUN . ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${CONDA_ENV} && \
+    mamba install -y gcc_linux-64 gxx_linux-64 && \
+    conda clean -afy
+
 # Pre-build the wmm2015 and wmm2020 packages using the conda environment's Python
 RUN /bin/bash -c ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${CONDA_ENV} && \
     python -c 'import wmm2015' && \
