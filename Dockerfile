@@ -97,10 +97,6 @@ RUN echo "Checking for pip 'requirements.txt'..." \
          echo "No pip requirements.txt found" ; \
        fi
 
-# Change ownership and permissions for savic
-RUN chown -R jovyan:users ${CONDA_DIR}/envs/${CONDA_ENV}/lib/python3.11/site-packages/savic && \
-    chmod -R u+w ${CONDA_DIR}/envs/${CONDA_ENV}/lib/python3.11/site-packages/savic
-
 # Install (or reinstall) the necessary compiler toolchain packages into the conda environment for wmm2015 and wmm2020
 RUN . ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${CONDA_ENV} && \
     mamba install -y gcc_linux-64 gxx_linux-64 && \
@@ -114,6 +110,10 @@ RUN /bin/bash -c ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${COND
 # Change ownership of the wmm2015 and wmm2020 package directories
 RUN chown -R jovyan:users ${CONDA_DIR}/envs/${CONDA_ENV}/lib/python3.11/site-packages/wmm2015 && \
     chown -R jovyan:users ${CONDA_DIR}/envs/${CONDA_ENV}/lib/python3.11/site-packages/wmm2020
+
+# Change ownership and permissions for savic
+RUN chown -R jovyan:users ${CONDA_DIR}/envs/${CONDA_ENV}/lib/python3.11/site-packages/savic && \
+    chmod -R u+w ${CONDA_DIR}/envs/${CONDA_ENV}/lib/python3.11/site-packages/savic
 
 # Install cdflib if install_cdflib.sh exists
 RUN if [ -f "/tmp/build/install_cdflib.sh" ]; then \
