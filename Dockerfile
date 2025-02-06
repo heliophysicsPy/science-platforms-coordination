@@ -92,7 +92,7 @@ RUN echo "Checking for 'conda-lock.yml' or 'environment.yml'..." \
 RUN echo "Checking for pip 'requirements.txt'..." \
     && if [ -f "/tmp/build/requirements.txt" ]; then \
          echo "Installing pip packages from requirements.txt" \
-         && ${NB_PYTHON_PREFIX}/bin/pip install --no-cache -r /tmp/build/requirements.txt ; \
+         && ${CONDA_DIR}/envs/${CONDA_ENV}/bin/pip install --no-cache -r /tmp/build/requirements.txt ; \
        else \
          echo "No pip requirements.txt found" ; \
        fi
