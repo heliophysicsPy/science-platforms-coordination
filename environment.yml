@@ -10,6 +10,11 @@ dependencies:
  - pip
  - conda-lock
  - cython
+ # from PyHC environment
+ - gfortran_linux-64
+ - gcc_linux-64
+ - gxx_linux-64
+ - jupyterlab-git
  # daskhub stuff
  - jupyter_core # =5.0.0
  - jupyter_client # =7.3.4
