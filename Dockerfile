@@ -87,6 +87,16 @@ RUN echo "Checking for 'conda-lock.yml' or 'environment.yml'..." \
         find ${NB_PYTHON_PREFIX}/lib/python*/site-packages/bokeh/server/static -follow -type f -name '*.js' ! -name '*.min.js' -delete \
     ; fi
 
+# Install pip packages specified in requirements.txt if it exists.
+# We don't want to save cached wheels in the image to avoid wasting space.
+RUN echo "Checking for pip 'requirements.txt'..." \
+    && if [ -f "/tmp/build/requirements.txt" ]; then \
+         echo "Installing pip packages from requirements.txt" \
+         && ${NB_PYTHON_PREFIX}/bin/pip install --no-cache -r /tmp/build/requirements.txt ; \
+       else \
+         echo "No pip requirements.txt found" ; \
+       fi
+
 # Install cdflib if install_cdflib.sh exists
 RUN if [ -f "/tmp/build/install_cdflib.sh" ]; then \
         echo "Installing cdflib..." \
