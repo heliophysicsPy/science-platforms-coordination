@@ -36,8 +36,8 @@ PYVERSION=$(python -c 'import sys; print("python%d.%d" % sys.version_info[:2])')
 # These commands ensure that the package directories for wmm2015,
 # wmm2020, and savic have the correct ownership based on the runtime user.
 debug "Adjusting ownership and permissions for pre-built packages"
-chown -R $(id -u):$(id -g) ${CONDA_DIR}/envs/${CONDA_ENV}/lib/${PYVERSION}/site-packages/wmm2015
-chown -R $(id -u):$(id -g) ${CONDA_DIR}/envs/${CONDA_ENV}/lib/${PYVERSION}/site-packages/wmm2020
+# chown -R $(id -u):$(id -g) ${CONDA_DIR}/envs/${CONDA_ENV}/lib/${PYVERSION}/site-packages/wmm2015
+# chown -R $(id -u):$(id -g) ${CONDA_DIR}/envs/${CONDA_ENV}/lib/${PYVERSION}/site-packages/wmm2020
 chown -R $(id -u):$(id -g) ${CONDA_DIR}/envs/${CONDA_ENV}/lib/${PYVERSION}/site-packages/savic
 chmod -R u+w ${CONDA_DIR}/envs/${CONDA_ENV}/lib/${PYVERSION}/site-packages/savic
 
