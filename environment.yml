@@ -11,9 +11,12 @@ dependencies:
  - conda-lock
  - cython
  # from PyHC environment
- - gfortran_linux-64
- - gcc_linux-64
- - gxx_linux-64
+ - compilers  # This meta-package on conda-forge installs gcc/g++/gfortran plus their runtimes
+ # - gfortran_linux-64
+ # - gcc_linux-64
+ # - gxx_linux-64
+ # - libgcc-ng
+ # - sysroot_linux-64
  - jupyterlab-git
  # daskhub stuff
  - jupyter_core # =5.0.0
