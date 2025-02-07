@@ -98,15 +98,15 @@ RUN echo "Checking for pip 'requirements.txt'..." \
        fi
 
 # Install (or reinstall) the necessary compiler toolchain packages into the conda environment for wmm2015 and wmm2020
-RUN . ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${CONDA_ENV} && \
-    conda install -y gcc_linux-64 gxx_linux-64 && \
-    conda clean -afy
+# RUN . ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${CONDA_ENV} && \
+#     conda install -y gcc_linux-64 gxx_linux-64 && \
+#     conda clean -afy
 
 # Pre-build the wmm2015 and wmm2020 packages using the conda environment's Python
-RUN /bin/bash -c ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${CONDA_ENV} && \
-    export LD_LIBRARY_PATH=${CONDA_DIR}/envs/${CONDA_ENV}/lib:$LD_LIBRARY_PATH && \
-    python -c 'import wmm2015' && \
-    python -c 'import wmm2020'"
+# RUN /bin/bash -c ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${CONDA_ENV} && \
+#     export LD_LIBRARY_PATH=${CONDA_DIR}/envs/${CONDA_ENV}/lib:$LD_LIBRARY_PATH && \
+#     python -c 'import wmm2015' && \
+#     python -c 'import wmm2020'"
 
 # Install cdflib if install_cdflib.sh exists
 RUN if [ -f "/tmp/build/install_cdflib.sh" ]; then \
