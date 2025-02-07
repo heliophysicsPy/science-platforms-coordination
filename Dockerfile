@@ -104,6 +104,7 @@ RUN . ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${CONDA_ENV} && \
 
 # Pre-build the wmm2015 and wmm2020 packages using the conda environment's Python
 RUN /bin/bash -c ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${CONDA_ENV} && \
+    export LD_LIBRARY_PATH=${CONDA_DIR}/envs/${CONDA_ENV}/lib:$LD_LIBRARY_PATH && \
     python -c 'import wmm2015' && \
     python -c 'import wmm2020'"
 
