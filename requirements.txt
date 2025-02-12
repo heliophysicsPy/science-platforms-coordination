@@ -364,19 +364,10 @@ git+https://github.com/nasa/Kamodo.git  # Not in pyhc-core
 ai.cs==1.0.7
 ccdproc==2.4.2
 geospacepy==0.2.2
-jupyterlab-s3-browser==0.12.0
-jupyter-offlinenotebook
 jupytext==1.16.4
 nbzip
+#OMMBV==1.0.1 # outdated distutils, cannot include
 pfsspy[performance]
 pyEphem==9.99
 pyForecastTools==1.1.1
-pysatCDAAC==0.0.4
-pysatMadrigal==0.2.0
-pysatMissions==0.3.5
-pysatModels==0.1.0
-pysatNASA==0.0.6
-pysatSeasons==0.2.1
-pysatSpaceWeather==0.2.1
-stixpy==0.1.3
 # ---- End Additional HelioCloud requirements ----
