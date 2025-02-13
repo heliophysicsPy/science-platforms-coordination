@@ -40,6 +40,14 @@ chown -R $(id -u):$(id -g) ${CONDA_DIR}/envs/${CONDA_ENV}/lib/${PYVERSION}/site-
 chown -R $(id -u):$(id -g) ${CONDA_DIR}/envs/${CONDA_ENV}/lib/${PYVERSION}/site-packages/wmm2020
 chown -R $(id -u):$(id -g) ${CONDA_DIR}/envs/${CONDA_ENV}/lib/${PYVERSION}/site-packages/savic
 chmod -R u+w ${CONDA_DIR}/envs/${CONDA_ENV}/lib/${PYVERSION}/site-packages/savic
+# Fix ownership and permissions for notebooks if the directory exists
+if [ -d "/media/notebooks" ]; then
+  echo "Adjusting ownership and permissions for /media/notebooks..."
+  chown -R "$(id -u):$(id -g)" /media/notebooks
+  chmod -R u+w /media/notebooks
+else
+  echo "/media/notebooks not found, skipping ownership adjustments."
+fi
 
 # for f in /opt/datalabs/init.d/*.sh; do
 #   chown $UID:$UID $f
