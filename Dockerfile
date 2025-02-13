@@ -50,7 +50,7 @@ RUN echo ". ${CONDA_DIR}/etc/profile.d/conda.sh ; conda activate ${CONDA_ENV}" >
 COPY jupyter_notebook_config.py /etc/
 COPY run.sh /opt/datalab/
 
-# Copy notebooks into the notebooks/ folder
+# Copy notebooks into the Datalab's notebooks/ folder (NOTE: /media/notebooks is read-only so notebooks don't run correctly...)
 COPY notebooks /media/notebooks/
 
 # Copy the entire build context to /tmp/build (similar to Pangeo's approach)
