@@ -56,7 +56,8 @@ COPY notebooks /media/notebooks/
 # Copy the entire build context to /tmp/build (similar to Pangeo's approach)
 COPY . /tmp/build/
 
-# Temporary debug ls
+# Temporary debug ls to check /tmp/build contents
+RUN echo "DEBUG: /tmp/build contents:"
 RUN ls -lah /tmp/build
 
 # Ensure the run.sh script is executable
@@ -133,6 +134,10 @@ RUN apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && . ${CONDA_DIR}/etc/profile.d/conda.sh \
     && conda clean -afy
+
+# Temporary debug ls to check /tmp/build contents
+RUN echo "DEBUG: /tmp/build contents:"
+RUN ls -lah /tmp/build
 
 # Remove all source files except README.md
 RUN mkdir -p /media/home \
