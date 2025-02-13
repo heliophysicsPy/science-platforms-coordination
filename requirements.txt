@@ -43,7 +43,7 @@ bleach!=5.0.0
 blinker>=1.9
 blosc2>=2.3.0
 bokeh>=1.1
-boto3
+boto3==1.36.1  # CONFLICT FIX: we're getting botocore 1.36.1 but boto3 1.36.3 was getting pulled in, which was incompatible
 botocore>=1.36.1,<1.36.2
 bottleneck
 cartopy>=0.23.0,<0.24.0
@@ -89,7 +89,7 @@ flask==1.1.2
 fonttools>=4.22.0
 fortranformat
 frozenlist>=1.1.1
-fsspec==2024.12.0
+fsspec==2025.2.0  # CONFLICT FIX: used to be 2024.12.0 but s3fs 2025.2.0 requires fsspec==2024.2.0.*
 gcmprocpy==1.1.0
 geomag
 geomagindices>=1.4.0
@@ -184,10 +184,10 @@ ncompress
 ndcube==2.3.0
 ndindex>=1.4
 nest-asyncio
-netcdf4>=1.6.2
+netcdf4>=1.6.2,<1.7.0  # CONFLICT FIX: kamodo-ccmc requires netcdf4<1.7.0
 networkx>=3.0
 nexradutils==1.0.0
-notebook
+notebook==7.3.2  # CONFLICT FIX: notebook 7.2.2 was getting pulled in, which required jupyterlab<4.3 but we had 4.3.5
 notebook-shim>=0.2,<0.3
 numexpr>=2.6.2
 numpy>=1.26.4,<2.0.0,!=1.24.0
