@@ -51,7 +51,7 @@ COPY jupyter_notebook_config.py /etc/
 COPY run.sh /opt/datalab/
 
 # Copy notebooks into the notebooks/ folder
-COPY notebooks /media/home/notebooks
+COPY notebooks /media/notebooks/
 
 # Copy the entire build context to /tmp/build (similar to Pangeo's approach)
 COPY . /tmp/build/
