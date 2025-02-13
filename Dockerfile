@@ -56,9 +56,9 @@ COPY notebooks /media/notebooks/
 # Copy the entire build context to /tmp/build (similar to Pangeo's approach)
 COPY . /tmp/build/
 
-# Temporary debug ls to check /tmp/build contents
-RUN echo "DEBUG: /tmp/build contents:"
-RUN ls -lah /tmp/build
+# # Temporary debug ls to check /tmp/build contents
+# RUN echo "DEBUG: /tmp/build contents:"
+# RUN ls -lah /tmp/build
 
 # Ensure the run.sh script is executable
 RUN chmod +x /opt/datalab/run.sh
@@ -135,18 +135,14 @@ RUN apt clean \
     && . ${CONDA_DIR}/etc/profile.d/conda.sh \
     && conda clean -afy
 
-# Temporary debug ls to check /tmp/build contents
-RUN echo "DEBUG: /tmp/build contents:"
-RUN ls -lah /tmp/build
-
-# Remove all source files except README.md
-RUN mkdir -p /media/home \
-    && if [ -f "/tmp/build/README.md" ]; then \
-        cp /tmp/build/README.md /media/home/README.md \
-    ; else \
-        echo "No README.md found." \
-    ; fi \
-    && find /media/home/ -maxdepth 1 -type f ! -name 'README.md' -exec rm -f {} +
+# # Remove all source files except README.md (always fails becuase /tmp/build/ gets deleted by the previous step. Whoops...
+# RUN mkdir -p /media/home \
+#     && if [ -f "/tmp/build/README.md" ]; then \
+#         cp /tmp/build/README.md /media/home/README.md \
+#     ; else \
+#         echo "No README.md found." \
+#     ; fi \
+#     && find /media/home/ -maxdepth 1 -type f ! -name 'README.md' -exec rm -f {} +
 
 # Create PyHC package data directories
 RUN mkdir -p /media/home/.sunpy /media/home/.spacepy/data
