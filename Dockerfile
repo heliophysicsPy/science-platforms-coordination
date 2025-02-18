@@ -117,11 +117,13 @@ RUN mkdir -p /home/jovyan/notebooks \
 # Install jupyterhub package so the image works on authenticated BinderHubs
 RUN conda install -c conda-forge -n pyhc-all -y jupyterhub-singleuser
 
-# Pre-build the wmm2015 and wmm2020 packages using Bash shell,
+# # Pre-build the wmm2015 and wmm2020 packages using Bash shell
+# RUN /bin/bash -c "source activate pyhc-all && \
+#     python -c 'import wmm2015' && \
+#     python -c 'import wmm2020'"
+    
 # Change ownership of the wmm2015, wmm2020, and savic package directories
 RUN /bin/bash -c "source activate pyhc-all && \
-    python -c 'import wmm2015' && \
-    python -c 'import wmm2020' && \
     PYVERSION=\$(python -c 'import sys; print(\"python%d.%d\" % sys.version_info[:2])') && \
     echo \"Detected PYVERSION=\$PYVERSION\" && \
     chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/wmm2015 && \
