@@ -7,6 +7,16 @@ USER root
 RUN useradd -m -s /bin/bash -N -u 1000 jovyan
 
 ###############################################################################
+# Install and update conda, then install a pinned Mamba version in base
+###############################################################################
+RUN conda update -n base -y conda \
+    && conda install -n base -c conda-forge -y "mamba=1.5.*" \
+    && conda clean -afy \
+    && rm -rf /opt/conda/pkgs/*
+
+ENV MAMBA_ROOT_PREFIX=/opt/conda
+
+###############################################################################
 # Copy all files from the repo context into /tmp/build, so we can check them.
 ###############################################################################
 WORKDIR /tmp/build
@@ -32,7 +42,7 @@ RUN echo "Checking for 'apt.txt'..." \
 RUN echo "Checking for 'environment.yml'..." \
     && if [ -f "environment.yml" ]; then \
         echo "Using environment.yml to update pyhc-all..." \
-        && conda env update -n pyhc-all -f environment.yml; \
+        && mamba env update -n pyhc-all -f environment.yml; \
     else \
         echo "No environment.yml found, skipping."; \
     fi \
