@@ -135,6 +135,9 @@ RUN apt clean \
     && . ${CONDA_DIR}/etc/profile.d/conda.sh \
     && conda clean -afy
 
+# Update /media/notebooks permissions to make it not read-only
+RUN mkdir -p /media/notebooks/; chmod -R 777 /media/notebooks
+
 # # Remove all source files except README.md (always fails becuase /tmp/build/ gets deleted by the previous step. Whoops...
 # RUN mkdir -p /media/home \
 #     && if [ -f "/tmp/build/README.md" ]; then \
