@@ -1,0 +1,136 @@
+# just the bare minimum basics to run notebooks in HelioCloud
+name: heliocloud-notebook-base
+channels:
+ - conda-forge
+ - nodefaults
+dependencies:
+ # the basics
+ - python=3.11.*
+ - pytest
+ - pip
+ - conda-lock
+ - cython
+ # juypter stuff
+ - jupyter_core=5.7.2
+ - jupyter_client=8.6.2
+ - jupyter_server=2.14.1
+ - jupyter-server-proxy=4.2.0
+ - jupyterlab=4.2.2
+ - jupyterlab_server=2.27.2
+ - jupyterlab_pygments=0.3.0
+ - jupyterlab_widgets=3.0.11
+ - jupyterhub-base=5.0.0
+ - jupyterhub-singleuser=5.0.0
+ - jupyter-book  # =0.15.1
+ # daskhub stuff
+ - dask=2024.6.2
+ - dask-core=2024.6.2
+ - dask-gateway=2024.1.0
+ - dask-labextension=7.0.0
+ - dask-glm=0.3.2
+ - dask-ml=2024.4.4
+ - distributed=2024.6.2
+ # helio/pyhc stuff
+ - aiapy=0.7.4
+ - cdflib
+ - hapiclient=0.2.5
+ - plasmapy=2024.5.0
+ - sunpy=5.1.2
+ - sunkit-image=0.5.1
+ - sunpy-soar=1.2
+ - voila # =0.4.0
+ # other
+ - glob2
+ - html5lib
+ - ipympl # interactive matplotlib  
+ - keyring # password storage 
+ - nbgitpuller
+ - nodejs
+ - python-magic # magic_open
+ - py-spy # load testing req
+ - sgp4
+# - smart_open
+# PANGEO depends
+# - adlfs # azure datalake fs 
+ - awscli
+# - black # code formatter 
+ - boto3
+# - bottleneck
+# - ciso
+# - fastjmd95
+# - flox
+# - fsspec
+# - gcsfs # google cloud storage 
+# - gh
+# - gh-scoped-creds
+# - git-lfs
+ - h5netcdf
+ - h5py
+# - holoviews # plot and annotate data 
+# - hvplot # visualiztion 
+ - ipdb
+ - ipython=8.6.0
+ - ipykernel=6.20.2
+ - ipyleaflet
+ - ipytree=0.2.2
+ - ipywidgets=8.1.2 # warning : this caused issues in the past 
+ - jupyterlab_code_formatter
+ - jupyterlab-git # =0.39.3
+# - jupyterlab-myst
+ - jupyter-panel-proxy # =0.1.0
+ - jupyter-resource-usage # =0.6.4
+ - kerchunk
+# - line_profiler
+ - lxml
+ - lz4
+ - matplotlib-base
+ - memory_profiler
+ - nb_conda_kernels=2.3.1
+ - nbstripout
+# - nc-time-axis
+ - netcdf4
+# - numbagg
+ - numcodecs
+ - numpy
+# - numpy_groupies
+ - pandas
+ - panel
+   # this causes a bad import of build env
+# - parcels # generate conda pack parcels for cloudera hadoop 
+# - param
+# - pyarrow # apache arrow 
+# - python-blosc
+# - python-gist
+# - python-graphviz
+# - python-xxhash
+ - rechunker
+ - s3fs>0.5
+ - scikit-image
+ - scikit-learn
+ - scipy
+ - seaborn
+ - sparse
+# - snakeviz # graphical browser of cProfile 
+# - tiledb-py
+# - timezonefinder
+ - tensorflow
+# - watermark
+ - xarray
+ - xarrayutils
+# - xarray-datatree
+   #- xarray_leaflet # rio/geotiff related 
+# - xarray-spatial
+# - xbatcher
+# - xcape
+# - xgboost # binary packages for some language bindings, NVIDIA GPU support 
+#- xhistogram # Fast, flexible, label-aware histograms for numpy and xarray 
+# - xmitgcm
+# - xpublish # serve xarray over http 
+# - xrft # the discrete Fourier transform (DFT) on xarray and dask arrays 
+# - xxhash # Extremely fast Hash algorithm, processing at RAM speed limits 
+ - zarr
+ # from helio-daskhub-core
+ - specutils
+ - photutils
+ - xlrd
+ - xlwt
