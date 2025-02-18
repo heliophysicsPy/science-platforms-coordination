@@ -5,7 +5,7 @@ channels:
  - nodefaults
 dependencies:
  # the basics
- - python=3.11.*
+ # - python=3.11.*
  - pytest
  - pip
  - conda-lock
@@ -31,14 +31,14 @@ dependencies:
  - dask-ml=2024.4.4
  - distributed=2024.6.2
  # helio/pyhc stuff
- - aiapy=0.7.4
- - cdflib
- - hapiclient=0.2.5
- - plasmapy=2024.5.0
- - sunpy=5.1.2
- - sunkit-image=0.5.1
+ # - aiapy=0.7.4
+ # - cdflib
+ # - hapiclient=0.2.5
+ # - plasmapy=2024.5.0
+ # - sunpy=5.1.2
+ # - sunkit-image=0.5.1
  - sunpy-soar=1.2
- - voila # =0.4.0
+ # - voila # =0.4.0
  # other
  - glob2
  - html5lib
