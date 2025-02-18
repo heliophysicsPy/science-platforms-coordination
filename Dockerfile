@@ -124,5 +124,8 @@ RUN /bin/bash -c "source activate pyhc-all && \
     chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/savic && \
     chmod -R u+w /opt/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/savic"
 
+# create PyHC package data dirs (needed?)
+RUN mkdir -p $NB_USER/.sunpy $NB_USER/.spacepy/data
+
 # Default back to /home/jovyan
 WORKDIR /home/jovyan
