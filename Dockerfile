@@ -101,23 +101,23 @@ RUN mkdir -p /home/jovyan/notebooks \
 
 ###############################################################################
 # Original steps from pyhc Dockerfile (pre-build wmm, jupyterhub install, etc.)
+# Dynamically detect Python version to get correct paths to site-packages/
 ###############################################################################
-
-# Pre-build the wmm2015 and wmm2020 packages using Bash shell
-RUN /bin/bash -c "source activate pyhc-all && \
-    python -c 'import wmm2015' && \
-    python -c 'import wmm2020'"
 
 # Install jupyterhub package so the image works on authenticated BinderHubs
 RUN conda install -c conda-forge -n pyhc-all -y jupyterhub-singleuser
 
-# Change ownership of the wmm2015 and wmm2020 package directories
-RUN chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/python3.11/site-packages/wmm2015 && \
-    chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/python3.11/site-packages/wmm2020
-
-# Change ownership and permissions for savic
-RUN chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/python3.11/site-packages/savic && \
-    chmod -R u+w /opt/conda/envs/pyhc-all/lib/python3.11/site-packages/savic
+# Pre-build the wmm2015 and wmm2020 packages using Bash shell,
+# Change ownership of the wmm2015, wmm2020, and savic package directories
+RUN /bin/bash -c "source activate pyhc-all && \
+    python -c 'import wmm2015' && \
+    python -c 'import wmm2020' && \
+    PYVERSION=\$(python -c 'import sys; print(\"python%d.%d\" % sys.version_info[:2])') && \
+    echo \"Detected PYVERSION=\$PYVERSION\" && \
+    chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/wmm2015 && \
+    chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/wmm2020 && \
+    chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/savic && \
+    chmod -R u+w /opt/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/savic"
 
 # Default back to /home/jovyan
 WORKDIR /home/jovyan
