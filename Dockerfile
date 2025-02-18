@@ -6,11 +6,6 @@ USER root
 # Create and configure user "jovyan" (if it doesn’t already exist in the base image)
 RUN useradd -m -s /bin/bash -N -u 1000 jovyan
 
-# Install mamba in the base environment
-RUN conda install -c conda-forge -y mamba \
-    && conda clean -afy \
-    && rm -rf /opt/conda/pkgs/*  # remove leftover packages from the conda cache
-
 ###############################################################################
 # Copy all files from the repo context into /tmp/build, so we can check them.
 ###############################################################################
@@ -37,7 +32,7 @@ RUN echo "Checking for 'apt.txt'..." \
 RUN echo "Checking for 'environment.yml'..." \
     && if [ -f "environment.yml" ]; then \
         echo "Using environment.yml to update pyhc-all..." \
-        && mamba env update -n pyhc-all -f environment.yml; \
+        && conda env update -n pyhc-all -f environment.yml; \
     else \
         echo "No environment.yml found, skipping."; \
     fi \
