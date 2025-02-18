@@ -138,6 +138,20 @@ RUN apt clean \
 # Update /media/notebooks permissions to make it not read-only
 RUN mkdir -p /media/notebooks/; chmod -R 777 /media/notebooks
 
+# Make wmm2015, wmm2020, and savic site-packages world-writable
+RUN /bin/bash -c "\
+    . ${CONDA_DIR}/etc/profile.d/conda.sh && \
+    conda activate ${CONDA_ENV} && \
+    PYVERSION=\$(python -c 'import sys; print(\"python%d.%d\" % sys.version_info[:2])') && \
+    echo \"Detected Python version: \$PYVERSION\" && \
+    chmod -R 777 \
+      ${CONDA_DIR}/envs/${CONDA_ENV}/lib/\${PYVERSION}/site-packages/wmm2015 && \
+    chmod -R 777 \
+      ${CONDA_DIR}/envs/${CONDA_ENV}/lib/\${PYVERSION}/site-packages/wmm2020 && \
+    chmod -R 777 \
+      ${CONDA_DIR}/envs/${CONDA_ENV}/lib/\${PYVERSION}/site-packages/savic \
+"
+
 # # Remove all source files except README.md (always fails becuase /tmp/build/ gets deleted by the previous step. Whoops...
 # RUN mkdir -p /media/home \
 #     && if [ -f "/tmp/build/README.md" ]; then \
