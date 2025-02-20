@@ -6,11 +6,10 @@ WORKDIR /app
 
 USER root
 
-# Ensure the jovyan user exists and has correct permissions,
+# Ensure the jovyan user has correct permissions,
 # then copy all notebooks from /app/notebooks into /home/jovyan/notebooks
 # and copy the README into /home/jovyan
-RUN useradd -m -s /bin/bash -N -u 1000 jovyan && \
-    chown -R jovyan:users /app && \
+RUN chown -R jovyan:users /app && \
     mkdir -p /home/jovyan/notebooks && \
     if [ -d "/app/notebooks" ]; then \
         cp -r /app/notebooks/* /home/jovyan/notebooks/; \
