@@ -6,7 +6,7 @@ WORKDIR /app
 
 USER root
 
-# Ensure the jovyan user has correct permissions,
+# Ensure the jovyan user owns /app,
 # then copy all notebooks from /app/notebooks into /home/jovyan/notebooks
 # and copy the README into /home/jovyan
 RUN chown -R jovyan:users /app && \
