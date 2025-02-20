@@ -20,6 +20,10 @@ RUN chown -R jovyan:users /app && \
         chown jovyan:users /home/jovyan/README.md; \
     fi
 
+# Copy start into /srv/start and make it executable (TODO: this should be done in the pyhc-docker-environment repo—to put it in pyhc-heliocloud—instead of here!)
+COPY start /srv/start
+RUN chmod +x /srv/start
+
 # Ensure jupyterhub-singleuser is installed so the image will work on authenticated binderhubs (commented out because base image already contains it!) 
 # RUN conda install -c conda-forge -n pyhc-all -y jupyterhub-singleuser
 
