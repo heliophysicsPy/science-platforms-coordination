@@ -34,8 +34,8 @@ RUN /bin/bash -c "source activate pyhc-all && \
 
 # Change ownership of home dir and Python env using dynamic Python version
 RUN /bin/bash -c "source activate pyhc-all && \
-    PYVERSION=$(python -c 'import sys; print(\"python%d.%d\" % sys.version_info[:2])') && \
-    echo \"Detected PYVERSION=$PYVERSION\" && \
+    PYVERSION=\$(python -c 'import sys; print(\"python%d.%d\" % sys.version_info[:2])') && \
+    echo \"Detected PYVERSION=\$PYVERSION\" && \
     chown -R jovyan:users /home/jovyan && \
     chmod -R u+w /home/jovyan && \
     chown -R jovyan:users /srv/conda/envs/pyhc-all && \
