@@ -43,8 +43,3 @@ RUN /bin/bash -c "source activate pyhc-all && \
 
 # Go back to the default working directory
 WORKDIR /home/jovyan
-
-# EXPOSE 8888
-
-# # CMD to run JupyterLab (this will be passed to exec "$@" in the start script)
-# CMD ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--allow-root"]
