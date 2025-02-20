@@ -21,9 +21,9 @@ RUN chown -R jovyan:users /app && \
     fi
 
 # Pre-build the wmm2015 and wmm2020 packages using Bash shell
-RUN /bin/bash -c "source activate \$CONDA_ENV && \
-    python -c 'import wmm2015' && \
-    python -c 'import wmm2020'"
+# RUN /bin/bash -c "source activate \$CONDA_ENV && \
+#     python -c 'import wmm2015' && \
+#     python -c 'import wmm2020'"
 
 # Change ownership of home dir and Python env using dynamic Python version (note: this recursive permission setting can apparently take a long time...)
 RUN /bin/bash -c "source activate \$CONDA_ENV && \
