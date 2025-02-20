@@ -1,5 +1,5 @@
 # Use the PyHC environment already in Docker Hub
-FROM spolson/pyhc-environment:v2025.02.20
+FROM spolson/pyhc-environment:v2025.02.19
 
 # Set the working directory to /app, where `import-test.ipynb` is located
 WORKDIR /app
