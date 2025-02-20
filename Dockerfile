@@ -32,7 +32,7 @@ RUN /bin/bash -c "source activate pyhc-all && \
     python -c 'import wmm2015' && \
     python -c 'import wmm2020'"
 
-# Change ownership of home dir and Python env using dynamic Python version (note: this recursive permission setting apparently takes a long time... reconsider?)
+# Change ownership of home dir and Python env using dynamic Python version (note: this recursive permission setting apparently takes a long time... reconsider? Maybe stop at .../pyhc-all/lib/\$PYVERSION/site-packages instead?)
 RUN /bin/bash -c "source activate pyhc-all && \
     PYVERSION=\$(python -c 'import sys; print(\"python%d.%d\" % sys.version_info[:2])') && \
     echo \"Detected PYVERSION=\$PYVERSION\" && \
