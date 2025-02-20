@@ -32,10 +32,10 @@ RUN /bin/bash -c "source activate pyhc-all && \
 RUN /bin/bash -c "source activate pyhc-all && \
     PYVERSION=\$(python -c 'import sys; print(\"python%d.%d\" % sys.version_info[:2])') && \
     echo \"Detected PYVERSION=\$PYVERSION\" && \
-    # chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/wmm2015 && \
-    # chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/wmm2020 && \
-    chown -R jovyan:users /opt/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/savic && \
-    chmod -R u+w /opt/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/savic"
+    chown -R jovyan:users /srv/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/wmm2015 && \
+    chown -R jovyan:users /srv/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/wmm2020 && \
+    chown -R jovyan:users /srv/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/savic && \
+    chmod -R u+w /srv/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/savic"
 
 # Go back to the default working directory
 WORKDIR /home/jovyan
