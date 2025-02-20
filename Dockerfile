@@ -32,19 +32,19 @@ RUN /bin/bash -c "source activate pyhc-all && \
     python -c 'import wmm2015' && \
     python -c 'import wmm2020'"
 
-# Change ownership of wmm2015, wmm2020, and savic directories using dynamic Python version
+# Change ownership of home dir and Python env using dynamic Python version
 RUN /bin/bash -c "source activate pyhc-all && \
-    PYVERSION=\$(python -c 'import sys; print(\"python%d.%d\" % sys.version_info[:2])') && \
-    echo \"Detected PYVERSION=\$PYVERSION\" && \
-    chown -R jovyan:users /srv/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/wmm2015 && \
-    chown -R jovyan:users /srv/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/wmm2020 && \
-    chown -R jovyan:users /srv/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/savic && \
-    chmod -R u+w /srv/conda/envs/pyhc-all/lib/\$PYVERSION/site-packages/savic"
+    PYVERSION=$(python -c 'import sys; print(\"python%d.%d\" % sys.version_info[:2])') && \
+    echo \"Detected PYVERSION=$PYVERSION\" && \
+    chown -R jovyan:users /home/jovyan && \
+    chmod -R u+w /home/jovyan && \
+    chown -R jovyan:users /srv/conda/envs/pyhc-all && \
+    chmod -R u+w /srv/conda/envs/pyhc-all"
 
 # Go back to the default working directory
 WORKDIR /home/jovyan
 
-EXPOSE 8888
+# EXPOSE 8888
 
-# CMD to run JupyterLab (this will be passed to exec "$@" in the start script)
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--allow-root"]
+# # CMD to run JupyterLab (this will be passed to exec "$@" in the start script)
+# CMD ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--allow-root"]
