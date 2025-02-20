@@ -20,9 +20,6 @@ RUN chown -R jovyan:users /app && \
         chown jovyan:users /home/jovyan/README.md; \
     fi
 
-# Ensure jupyterhub-singleuser is installed so the image will work on authenticated binderhubs (commented out because base image already contains it!) 
-# RUN conda install -c conda-forge -n pyhc-all -y jupyterhub-singleuser
-
 # Pre-build the wmm2015 and wmm2020 packages using Bash shell
 RUN /bin/bash -c "source activate \$CONDA_ENV && \
     python -c 'import wmm2015' && \
