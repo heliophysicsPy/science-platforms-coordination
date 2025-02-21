@@ -20,10 +20,6 @@ RUN chown -R jovyan:users /app && \
         chown jovyan:users /home/jovyan/README.md; \
     fi
 
-# Copy start into /srv/start and make it executable (TODO: this should be done in the pyhc-docker-environment repo—to put it in pyhc-heliocloud—instead of here!)
-COPY start /srv/start
-RUN chmod +x /srv/start
-
 # Pre-build the wmm2015 and wmm2020 packages using Bash shell
 # RUN /bin/bash -c "source activate \$CONDA_ENV && \
 #     python -c 'import wmm2015' && \
