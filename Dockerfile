@@ -25,14 +25,8 @@ RUN chown -R jovyan:users /app && \
 #     python -c 'import wmm2015' && \
 #     python -c 'import wmm2020'"
 
-# Change ownership of home dir and Python env using dynamic Python version (note: this recursive permission setting can apparently take a long time...)
-RUN /bin/bash -c "source activate \$CONDA_ENV && \
-    PYVERSION=\$(python -c 'import sys; print(\"python%d.%d\" % sys.version_info[:2])') && \
-    echo \"Detected PYVERSION=\$PYVERSION\" && \
-    chown -R jovyan:users /home/jovyan && \
-    chmod -R u+w /home/jovyan && \
-    chown -R jovyan:users /srv/conda/envs/\$CONDA_ENV/lib/\$PYVERSION/site-packages && \
-    chmod -R u+w /srv/conda/envs/\$CONDA_ENV/lib/\$PYVERSION/site-packages"
+# Remove build cruft (TODO: figure out why they're there in the first place and remove them from pyhc-heliocloud image)
+RUN rm -rf /home/jovyan/environment.yml /home/jovyan/requirements.txt /home/jovyan/apt.txt /home/jovyan/jupyter_notebook_config.py /home/jovyan/motd /home/jovyan/start /home/jovyan/Dockerfile /home/jovyan/contents
 
 # Go back to the default working directory
 WORKDIR /home/jovyan
