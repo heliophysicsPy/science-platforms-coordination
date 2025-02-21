@@ -1,5 +1,5 @@
 # Use the PyHC environment already in Docker Hub
-FROM spolson/pyhc-heliocloud:latest
+FROM spolson/pyhc-heliocloud:v2025.02.21-temp
 
 # Set the working directory to /app, where `import-test.ipynb` is located
 WORKDIR /app
