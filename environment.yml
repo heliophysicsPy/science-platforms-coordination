@@ -11,14 +11,15 @@ dependencies:
  - conda-lock
  - cython
  # from PyHC environment
- - compilers  # This meta-package on conda-forge installs gcc/g++/gfortran plus their runtimes (right?)
- - c-compiler
- - cxx-compiler
- - fortran-compiler
- - gfortran_linux-64
- - gcc_linux-64
- - gxx_linux-64
- - libgcc-ng
+ # (note: removing compilers because system compilers work better than conda ones)
+ # - compilers  # This meta-package on conda-forge installs gcc/g++/gfortran plus their runtimes (right?)
+ # - c-compiler
+ # - cxx-compiler
+ # - fortran-compiler
+ # - gfortran_linux-64
+ # - gcc_linux-64
+ # - gxx_linux-64
+ # - libgcc-ng
  - sysroot_linux-64
  - jupyterlab-git
  # juypter stuff
@@ -26,7 +27,7 @@ dependencies:
  - jupyter_client=8.6.2
  - jupyter_server=2.14.1
  - jupyter-server-proxy=4.2.0
- - jupyterlab=4.2.2
+ - jupyterlab=4.2.2  # CONFLICTS with jupyterlab>=4.3.4,<4.4,!=4.1.0 in PyHC requirements.txt
  - jupyterlab_server=2.27.2
  - jupyterlab_pygments=0.3.0
  - jupyterlab_widgets=3.0.11
