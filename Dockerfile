@@ -26,11 +26,6 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install pip packages for JupyterLab and Jupyter client
-RUN pip --no-cache-dir install \
-        jupyterlab==3.6.5 \
-        jupyter_client==7.1.1
-
 # Install Miniforge and conda-lock
 RUN echo "Installing Miniforge..." \
     && URL="https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
@@ -50,15 +45,14 @@ RUN echo ". ${CONDA_DIR}/etc/profile.d/conda.sh ; conda activate ${CONDA_ENV}" >
 COPY jupyter_notebook_config.py /etc/
 COPY run.sh /opt/datalab/
 
-# Copy notebooks into the Datalab's notebooks/ folder (NOTE: /media/notebooks is read-only so notebooks don't run correctly...)
+# Copy notebooks into the Datalab's notebooks/ folder
 COPY notebooks /media/notebooks/
+
+# Update /media/notebooks permissions to make it not read-only
+RUN mkdir -p /media/notebooks/; chmod -R 777 /media/notebooks
 
 # Copy the entire build context to /tmp/build (similar to Pangeo's approach)
 COPY . /tmp/build/
-
-# # Temporary debug ls to check /tmp/build contents
-# RUN echo "DEBUG: /tmp/build contents:"
-# RUN ls -lah /tmp/build
 
 # Ensure the run.sh script is executable
 RUN chmod +x /opt/datalab/run.sh
@@ -104,10 +98,8 @@ RUN echo "Checking for pip 'requirements.txt'..." \
          echo "No pip requirements.txt found" ; \
        fi
 
-# Install (or reinstall) the necessary compiler toolchain packages into the conda environment for wmm2015 and wmm2020
-# RUN . ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${CONDA_ENV} && \
-#     conda install -y gcc_linux-64 gxx_linux-64 && \
-#     conda clean -afy
+# Tell system to use system compiler
+ENV CC=/usr/bin/cc
 
 # Pre-build the wmm2015 and wmm2020 packages using the conda environment's Python
 # RUN /bin/bash -c ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate ${CONDA_ENV} && \
@@ -135,21 +127,14 @@ RUN apt clean \
     && . ${CONDA_DIR}/etc/profile.d/conda.sh \
     && conda clean -afy
 
-# Update /media/notebooks permissions to make it not read-only
-RUN mkdir -p /media/notebooks/; chmod -R 777 /media/notebooks
-
-# Make wmm2015, wmm2020, and savic site-packages world-writable
+# Set comprehensive world-writable permissions to allow package installation/modification (note: this recursive permission setting can take a long time...) 
+# Note the PYVERSION thing is no longer needed; was being used for paths to site-packages
 RUN /bin/bash -c "\
     . ${CONDA_DIR}/etc/profile.d/conda.sh && \
     conda activate ${CONDA_ENV} && \
     PYVERSION=\$(python -c 'import sys; print(\"python%d.%d\" % sys.version_info[:2])') && \
     echo \"Detected Python version: \$PYVERSION\" && \
-    chmod -R 777 \
-      ${CONDA_DIR}/envs/${CONDA_ENV}/lib/\${PYVERSION}/site-packages/wmm2015 && \
-    chmod -R 777 \
-      ${CONDA_DIR}/envs/${CONDA_ENV}/lib/\${PYVERSION}/site-packages/wmm2020 && \
-    chmod -R 777 \
-      ${CONDA_DIR}/envs/${CONDA_ENV}/lib/\${PYVERSION}/site-packages/savic \
+    chmod -R 777 ${CONDA_DIR} \
 "
 
 # # Remove all source files except README.md (always fails becuase /tmp/build/ gets deleted by the previous step. Whoops...
