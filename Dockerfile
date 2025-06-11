@@ -14,10 +14,10 @@ RUN apt clean \
    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
    && conda clean -afy
 
-# Clean up: remove everything in /home/jovyan except README.md and notebooks
+# Clean up: remove everything in /home/jovyan except requirements.txt and Welcome.ipynb
 RUN find /home/jovyan/ -mindepth 1 -maxdepth 1 \
-    ! -name 'README.md' \
-    ! -name 'notebooks' \
+    ! -name 'requirements.txt' \
+    ! -name 'Welcome.ipynb' \
     -exec rm -rf {} +
 
 USER $NB_USER
