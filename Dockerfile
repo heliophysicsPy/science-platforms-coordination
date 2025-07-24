@@ -20,6 +20,13 @@ RUN find /home/jovyan/ -mindepth 1 -maxdepth 1 \
     ! -name 'Welcome.ipynb' \
     -exec rm -rf {} +
 
+# Extract notebooks archive into notebooks directory
+COPY notebooks.tar.gz /tmp/
+RUN cd /home/jovyan && tar -xzf /tmp/notebooks.tar.gz && \
+    mkdir -p notebooks && \
+    mv notebooks/* notebooks/ 2>/dev/null || true && \
+    rm -f /tmp/notebooks.tar.gz
+
 USER $NB_USER
 
 # create PyHC package data dirs (needed?)
