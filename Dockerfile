@@ -26,10 +26,14 @@ RUN mkdir -p /home/jovyan/notebooks && \
     tar -xzf /tmp/notebooks.tar.gz -C /home/jovyan/notebooks && \
     rm -f /tmp/notebooks.tar.gz
 
-USER $NB_USER
-
 # create PyHC package data dirs (needed?)
-RUN mkdir -p $NB_USER/.sunpy $NB_USER/.spacepy/data
+RUN mkdir -p /home/$NB_USER/.sunpy /home/$NB_USER/.spacepy/data
+
+# Ensure jovyan owns everything with full permissions
+RUN chown -R $NB_USER /home/jovyan && \
+    chmod -R 777 /home/jovyan
+
+USER $NB_USER
 
 EXPOSE 8888
 
