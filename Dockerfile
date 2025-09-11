@@ -23,7 +23,7 @@ RUN find /home/jovyan/ -mindepth 1 -maxdepth 1 \
 USER $NB_USER
 
 # create PyHC package data dirs (needed?)
-RUN mkdir -p $NB_USER/.sunpy $NB_USER/.spacepy/data
+RUN mkdir -p /home/$NB_USER/.sunpy /home/$NB_USER/.spacepy/data
 
 EXPOSE 8888
 
