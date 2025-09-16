@@ -1,0 +1,27 @@
+name: Build Environment Images
+
+on:
+  push:
+    branches:
+      - heliocloud-base-2025-update
+      - heliocloud-base-w-survey-core
+      - heliocloud-base-w-survey-extended
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout files in repo
+        uses: actions/checkout@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: update jupyter dependencies with repo2docker
+        uses: jupyterhub/repo2docker-action@master
+        with:
+          DOCKER_USERNAME: ${{ secrets.QUAY_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+          DOCKER_REGISTRY: "quay.io"
+          IMAGE_NAME: "sapols/${{ github.ref_name }}"
+          BINDER_CACHE: true
+          PUBLIC_REGISTRY_CHECK: true
