@@ -14,8 +14,8 @@ RUN apt clean \
    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
    && conda clean -afy
 
-# Clean up: remove everything in /home/jovyan except notebooks and Welcome.ipynb
-RUN find /home/jovyan/ -mindepth 1 -maxdepth 1 \
+# Clean up: remove everything in /home/$NB_USER (default: /home/jovyan) except notebooks and Welcome.ipynb
+RUN find /home/$NB_USER/ -mindepth 1 -maxdepth 1 \
     ! -name 'notebooks' \
     ! -name 'Welcome.ipynb' \
     -exec rm -rf {} +
