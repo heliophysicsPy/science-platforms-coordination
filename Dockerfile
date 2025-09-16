@@ -14,24 +14,24 @@ RUN apt clean \
    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
    && conda clean -afy
 
-# Clean up: remove everything in /home/jovyan except requirements.txt and Welcome.ipynb
-RUN find /home/jovyan/ -mindepth 1 -maxdepth 1 \
+# Clean up: remove everything in /home/$NB_USER (default: /home/jovyan) except requirements.txt and Welcome.ipynb
+RUN find /home/$NB_USER/ -mindepth 1 -maxdepth 1 \
     ! -name 'requirements.txt' \
     ! -name 'Welcome.ipynb' \
     -exec rm -rf {} +
 
 # Extract notebooks archive into notebooks directory
 COPY notebooks.tar.gz /tmp/
-RUN mkdir -p /home/jovyan/notebooks && \
-    tar -xzf /tmp/notebooks.tar.gz -C /home/jovyan/notebooks && \
+RUN mkdir -p /home/$NB_USER/notebooks && \
+    tar -xzf /tmp/notebooks.tar.gz -C /home/$NB_USER/notebooks && \
     rm -f /tmp/notebooks.tar.gz
 
 # create PyHC package data dirs (needed?)
 RUN mkdir -p /home/$NB_USER/.sunpy /home/$NB_USER/.spacepy/data
 
-# Ensure jovyan owns everything with full permissions
-RUN chown -R $NB_USER /home/jovyan && \
-    chmod -R 777 /home/jovyan
+# Ensure user (default: jovyan) owns everything with full permissions
+RUN chown -R $NB_USER /home/$NB_USER && \
+    chmod -R 777 /home/$NB_USER
 
 USER $NB_USER
 
