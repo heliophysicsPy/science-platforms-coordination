@@ -28,6 +28,17 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           lfs: true
 
+      - name: Free Disk Space for Docker Build
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false  # Keep false since you need Docker
+          swap-storage: true
+
       - name: update jupyter dependencies with repo2docker
         uses: jupyterhub/repo2docker-action@master
         with:
