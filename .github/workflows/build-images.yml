@@ -6,6 +6,16 @@ on:
       - heliocloud-base-2025-update
       - heliocloud-base-w-survey-core
       - heliocloud-base-w-survey-extended
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build'
+        required: true
+        type: choice
+        options:
+        - heliocloud-base-2025-update
+        - heliocloud-base-w-survey-core
+        - heliocloud-base-w-survey-extended
 
 jobs:
   build-and-push:
@@ -14,6 +24,7 @@ jobs:
       - name: checkout files in repo
         uses: actions/checkout@main
         with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: update jupyter dependencies with repo2docker
@@ -22,6 +33,6 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.QUAY_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
           DOCKER_REGISTRY: "quay.io"
-          IMAGE_NAME: "sapols/${{ github.ref_name }}"
+          IMAGE_NAME: "sapols/${{ github.event.inputs.branch || github.ref_name }}"
           BINDER_CACHE: true
           PUBLIC_REGISTRY_CHECK: true
