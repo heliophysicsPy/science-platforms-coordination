@@ -1,2 +1,2 @@
 # Use the PyHC environment already in Docker Hub
-FROM spolson/pyhc-heliocloud:v2025.09.12
+FROM spolson/pyhc-heliocloud:v2025.09.16
