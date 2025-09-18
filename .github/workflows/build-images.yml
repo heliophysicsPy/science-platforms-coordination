@@ -22,11 +22,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout files in repo
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.branch || github.ref_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
           lfs: true
+          fetch-depth: 0
+
+      - name: Get actual commit SHA
+        id: get-sha
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Free Disk Space for Docker Build
         uses: jlumbroso/free-disk-space@main
@@ -41,6 +46,8 @@ jobs:
 
       - name: update jupyter dependencies with repo2docker
         uses: jupyterhub/repo2docker-action@master
+        env:
+          GITHUB_SHA: ${{ steps.get-sha.outputs.sha }}
         with:
           DOCKER_USERNAME: ${{ secrets.QUAY_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
