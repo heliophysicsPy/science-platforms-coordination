@@ -1,0 +1,63 @@
+name: Build Environment Images
+
+on:
+  push:
+    branches:
+      - heliocloud-base-2025-update
+      - heliocloud-base-w-survey-core
+      - heliocloud-base-w-survey-extended
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build'
+        required: true
+        type: choice
+        options:
+        - heliocloud-base-2025-update
+        - heliocloud-base-w-survey-core
+        - heliocloud-base-w-survey-extended
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout files in repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          lfs: true
+          fetch-depth: 0
+
+      - name: Get actual commit SHA
+        id: get-sha
+        run: |
+          SHA=$(git rev-parse HEAD | cut -c1-12)
+          echo "Commit SHA: $SHA"
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+          echo "GITHUB_SHA=$SHA" >> $GITHUB_ENV
+
+      - name: Free Disk Space for Docker Build
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false  # Keep false since you need Docker
+          swap-storage: true
+
+      - name: update jupyter dependencies with repo2docker
+        uses: jupyterhub/repo2docker-action@master
+        env:
+          GITHUB_SHA: ${{ steps.get-sha.outputs.sha }}
+        with:
+          DOCKER_USERNAME: ${{ secrets.QUAY_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+          DOCKER_REGISTRY: "quay.io"
+          IMAGE_NAME: "sapols/${{ github.event.inputs.branch || github.ref_name }}"
+          ADDITIONAL_TAG: ${{ steps.get-sha.outputs.sha }}
+          COMMIT_MSG: "Update image tag to ${{ steps.get-sha.outputs.sha }}"
+          BINDER_CACHE: true
+          PUBLIC_REGISTRY_CHECK: true
