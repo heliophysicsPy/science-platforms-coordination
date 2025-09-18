@@ -32,7 +32,7 @@ jobs:
       - name: Get actual commit SHA
         id: get-sha
         run: |
-          SHA=$(git rev-parse HEAD)
+          SHA=$(git rev-parse HEAD | cut -c1-12)
           echo "Commit SHA: $SHA"
           echo "sha=$SHA" >> $GITHUB_OUTPUT
 
