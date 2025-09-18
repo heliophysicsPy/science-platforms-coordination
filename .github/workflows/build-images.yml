@@ -31,7 +31,10 @@ jobs:
 
       - name: Get actual commit SHA
         id: get-sha
-        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+        run: |
+          SHA=$(git rev-parse HEAD)
+          echo "Commit SHA: $SHA"
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
 
       - name: Free Disk Space for Docker Build
         uses: jlumbroso/free-disk-space@main
