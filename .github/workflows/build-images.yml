@@ -58,5 +58,6 @@ jobs:
           DOCKER_REGISTRY: "quay.io"
           IMAGE_NAME: "sapols/${{ github.event.inputs.branch || github.ref_name }}"
           ADDITIONAL_TAG: ${{ steps.get-sha.outputs.sha }}
+          COMMIT_MSG: "Update image tag to ${{ steps.get-sha.outputs.sha }}"
           BINDER_CACHE: true
           PUBLIC_REGISTRY_CHECK: true
