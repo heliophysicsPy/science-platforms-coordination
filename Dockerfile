@@ -14,28 +14,39 @@ RUN apt clean \
    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
    && conda clean -afy
 
-# Clean up: remove everything in /home/$NB_USER (default: /home/jovyan) except requirements.txt and Welcome.ipynb
-RUN find /home/$NB_USER/ -mindepth 1 -maxdepth 1 \
-    ! -name 'requirements.txt' \
-    ! -name 'Welcome.ipynb' \
-    -exec rm -rf {} +
+# Create directory for repo content in /opt
+RUN mkdir -p /opt/heliocloud-base-w-survey-core
 
-# Extract notebooks archive into notebooks directory
+# Copy Welcome.ipynb and requirements.txt to the opt directory
+COPY Welcome.ipynb /opt/heliocloud-base-w-survey-core/
+COPY requirements.txt /opt/heliocloud-base-w-survey-core/
+
+# Extract notebooks archive into notebooks directory in opt
 COPY notebooks.tar.gz /tmp/
-RUN mkdir -p /home/$NB_USER/notebooks && \
-    tar -xzf /tmp/notebooks.tar.gz -C /home/$NB_USER/notebooks && \
+RUN mkdir -p /opt/heliocloud-base-w-survey-core/notebooks && \
+    tar -xzf /tmp/notebooks.tar.gz -C /opt/heliocloud-base-w-survey-core/notebooks && \
     rm -f /tmp/notebooks.tar.gz
 
-# create PyHC package data dirs (needed?)
-RUN mkdir -p /home/$NB_USER/.sunpy /home/$NB_USER/.spacepy/data
+# create PyHC package data dirs in opt directory
+RUN mkdir -p /opt/heliocloud-base-w-survey-core/.sunpy /opt/heliocloud-base-w-survey-core/.spacepy/data
 
-# Ensure user (default: jovyan) owns everything with full permissions
-RUN chown -R $NB_USER /home/$NB_USER && \
-    chmod -R 777 /home/$NB_USER
+# Copy start script to the branch-specific directory and make it executable
+COPY start /opt/heliocloud-base-w-survey-core/start
+RUN chmod +x /opt/heliocloud-base-w-survey-core/start
+
+# Ensure user (default: jovyan) owns everything in opt with full permissions
+RUN chown -R $NB_USER /opt/heliocloud-base-w-survey-core && \
+    chmod -R 777 /opt/heliocloud-base-w-survey-core
+
+# Clean up /home/$NB_USER completely since files will be symlinked from /opt
+RUN rm -rf /home/$NB_USER/*
 
 USER $NB_USER
 
 EXPOSE 8888
+
+# Use the branch-specific start script as entrypoint
+ENTRYPOINT ["/opt/heliocloud-base-w-survey-core/start"]
 
 # CMD to run JupyterLab (this will be passed to exec "$@" in the start script)
 CMD ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--allow-root"]
