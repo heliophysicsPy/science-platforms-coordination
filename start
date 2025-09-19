@@ -10,9 +10,9 @@ fi
 # ==== ONLY EDIT WITHIN THIS BLOCK =====
 
 # Setup files and directories for both Binder and JupyterHub compatibility
-BRANCH_NAME="heliocloud-base-w-survey-extended"
-OPT_DIR="/opt/${BRANCH_NAME}"
-JUPYTERHUB_HOME="/home/jovyan/${BRANCH_NAME}"
+DIR_NAME="survey-extended"
+OPT_DIR="/opt/${DIR_NAME}"
+JUPYTERHUB_HOME="/home/jovyan/${DIR_NAME}"
 
 # Check if we're in JupyterHub environment by checking if the branch-specific home dir should exist
 # We can detect this by checking if /home/jovyan has persistent storage (is a mountpoint)
