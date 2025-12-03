@@ -1,2 +1,2 @@
 # Use the PyHC environment already in Docker Hub
-FROM spolson/pyhc-environment:v2025.11.29
+FROM spolson/pyhc-environment:v2025.12.03
