@@ -37,7 +37,7 @@ RUN chmod +x /opt/survey-extended/start
 # NOTEBOOKS_SHA256 to the oid in its Git LFS pointer file.
 ARG NOTEBOOKS_COMMIT=f1f212c13015b7149a4e3bc54fc030b0f0524a12
 ARG NOTEBOOKS_SHA256=0ec9095c3788b508a24ad4667e7758ec034e6dd3d35983558fd934f5f934837b
-RUN wget -nv -O /tmp/notebooks.tar.gz \
+RUN wget -nv --no-hsts -O /tmp/notebooks.tar.gz \
         https://media.githubusercontent.com/media/heliophysicsPy/science-platforms-coordination/${NOTEBOOKS_COMMIT}/notebooks.tar.gz && \
     echo "${NOTEBOOKS_SHA256}  /tmp/notebooks.tar.gz" | sha256sum -c - && \
     mkdir -p /opt/survey-extended/notebooks && \
