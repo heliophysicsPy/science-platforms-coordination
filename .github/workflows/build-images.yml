@@ -26,15 +26,22 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          lfs: false  # the Dockerfile downloads notebooks.tar.gz itself, so skip the LFS download here
+          lfs: false  # the next step fetches notebooks.tar.gz from LFS only if the checked-out Dockerfile needs it
           fetch-depth: 0
 
-      - name: Check the Dockerfile's pinned notebooks archive matches notebooks.tar.gz
+      - name: Prepare notebooks.tar.gz for the checked-out Dockerfile
         run: |
-          oid=$(sed -n 's/^oid sha256://p' notebooks.tar.gz)
-          if [ -z "$oid" ] || ! grep -q "^ARG NOTEBOOKS_SHA256=$oid$" Dockerfile; then
-            echo "::error::NOTEBOOKS_SHA256 in the Dockerfile doesn't match notebooks.tar.gz (LFS oid: ${oid:-not found}). Update NOTEBOOKS_COMMIT and NOTEBOOKS_SHA256."
-            exit 1
+          if grep -q '^ARG NOTEBOOKS_SHA256=' Dockerfile; then
+            # This Dockerfile downloads the pinned archive itself; make sure the pin matches this commit's notebooks.tar.gz
+            oid=$(sed -n 's/^oid sha256://p' notebooks.tar.gz)
+            if [ -z "$oid" ] || ! grep -q "^ARG NOTEBOOKS_SHA256=$oid$" Dockerfile; then
+              echo "::error::NOTEBOOKS_SHA256 in the Dockerfile doesn't match notebooks.tar.gz (LFS oid: ${oid:-not found}). Update NOTEBOOKS_COMMIT and NOTEBOOKS_SHA256."
+              exit 1
+            fi
+          elif [ -f notebooks.tar.gz ]; then
+            # Older Dockerfiles copy the archive from the build context, so fetch it from LFS
+            git lfs install --local
+            git lfs pull --include notebooks.tar.gz
           fi
 
       - name: Get actual commit SHA
