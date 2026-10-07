@@ -3,8 +3,9 @@ FROM pangeo/base-image:${PANGEO_BASE_IMAGE_TAG}
 
 USER root
 
-# install CDFLIB
-RUN sh install_cdflib.sh
+# install CDFLIB, removing its build directory in the same layer (the later /tmp cleanup can't
+# remove files from an earlier layer)
+RUN sh install_cdflib.sh && rm -rf /tmp/cdf38_1-dist
 ENV CDF_LIB=/usr/lib64/cdf/lib
 
 # Clean up temporary data
