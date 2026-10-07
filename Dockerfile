@@ -3,8 +3,9 @@ FROM pangeo/base-image:${PANGEO_BASE_IMAGE_TAG}
 
 USER root
 
-# install CDFLIB
-RUN sh install_cdflib.sh
+# install CDFLIB, removing its build directory in the same layer (the later /tmp cleanup can't
+# remove files from an earlier layer)
+RUN sh install_cdflib.sh && rm -rf /tmp/cdf38_1-dist
 ENV CDF_LIB=/usr/lib64/cdf/lib
 
 # Clean up temporary data
@@ -21,12 +22,6 @@ RUN mkdir -p /opt/survey-extended
 COPY Welcome.ipynb /opt/survey-extended/
 COPY requirements.txt /opt/survey-extended/
 
-# Extract notebooks archive into notebooks directory in opt
-COPY notebooks.tar.gz /tmp/
-RUN mkdir -p /opt/survey-extended/notebooks && \
-    tar -xzf /tmp/notebooks.tar.gz -C /opt/survey-extended/notebooks && \
-    rm -f /tmp/notebooks.tar.gz
-
 # create PyHC package data dirs in opt directory
 RUN mkdir -p /opt/survey-extended/.sunpy /opt/survey-extended/.spacepy/data
 
@@ -34,8 +29,21 @@ RUN mkdir -p /opt/survey-extended/.sunpy /opt/survey-extended/.spacepy/data
 COPY start /opt/survey-extended/start
 RUN chmod +x /opt/survey-extended/start
 
-# Ensure user (default: jovyan) owns everything in opt with full permissions
-RUN chown -R $NB_USER /opt/survey-extended && \
+# Download and verify the notebooks archive, extract it into the notebooks directory in opt, delete
+# it, then ensure user (default: jovyan) owns everything in opt with full permissions, all in one
+# layer so neither the archive nor a second copy of the notebooks is stored in the image. The archive
+# is excluded from the build context (see .dockerignore), so Pangeo's ONBUILD step doesn't copy it in.
+# When notebooks.tar.gz changes, set NOTEBOOKS_COMMIT to a commit containing the new archive and
+# NOTEBOOKS_SHA256 to the oid in its Git LFS pointer file.
+ARG NOTEBOOKS_COMMIT=f1f212c13015b7149a4e3bc54fc030b0f0524a12
+ARG NOTEBOOKS_SHA256=0ec9095c3788b508a24ad4667e7758ec034e6dd3d35983558fd934f5f934837b
+RUN wget -nv -O /tmp/notebooks.tar.gz \
+        https://media.githubusercontent.com/media/heliophysicsPy/science-platforms-coordination/${NOTEBOOKS_COMMIT}/notebooks.tar.gz && \
+    echo "${NOTEBOOKS_SHA256}  /tmp/notebooks.tar.gz" | sha256sum -c - && \
+    mkdir -p /opt/survey-extended/notebooks && \
+    tar -xzf /tmp/notebooks.tar.gz -C /opt/survey-extended/notebooks && \
+    rm /tmp/notebooks.tar.gz && \
+    chown -R $NB_USER /opt/survey-extended && \
     chmod -R 777 /opt/survey-extended
 
 # Clean up /home/$NB_USER completely since files will be symlinked from /opt
