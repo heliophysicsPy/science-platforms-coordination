@@ -1,3 +1,5 @@
-# Keep Git metadata out of Pangeo's ONBUILD copy of the build context into /home/jovyan (the build
-# workflow checks out with Git LFS, so .git/lfs/objects holds a second copy of notebooks.tar.gz)
+# Keep Git metadata out of Pangeo's ONBUILD copy of the build context into /home/jovyan
 .git
+# The Dockerfile downloads the notebooks archive instead (see NOTEBOOKS_COMMIT), so keep it out of
+# the build context too; otherwise Pangeo's ONBUILD step would copy it into the image
+notebooks.tar.gz
