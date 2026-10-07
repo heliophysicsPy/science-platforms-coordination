@@ -1,0 +1,3 @@
+# Keep Git metadata out of the image (COPY . /tmp/build/ would otherwise bake in the local .git,
+# including any Git LFS objects it holds; deleting /tmp later does not shrink earlier layers)
+.git

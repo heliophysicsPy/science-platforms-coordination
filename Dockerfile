@@ -27,6 +27,9 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Miniforge and conda-lock
+# Each step that writes to ${CONDA_DIR} makes its own new files world-writable (to allow package
+# installation/modification) in the same layer. A separate recursive chmod layer afterwards would
+# store a second copy of every file in ${CONDA_DIR}.
 RUN echo "Installing Miniforge..." \
     && URL="https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
     && wget --quiet ${URL} -O installer.sh \
@@ -36,7 +39,8 @@ RUN echo "Installing Miniforge..." \
     && conda activate base \
     && mamba install conda-lock -y \
     && mamba clean -afy \
-    && find ${CONDA_DIR} -follow -type f -name '*.a' -delete
+    && find ${CONDA_DIR} -follow -type f -name '*.a' -delete \
+    && chmod -R 777 ${CONDA_DIR}
 
 # Create the init_conda.sh script
 RUN echo ". ${CONDA_DIR}/etc/profile.d/conda.sh ; conda activate ${CONDA_ENV}" > /etc/profile.d/init_conda.sh
@@ -86,7 +90,8 @@ RUN echo "Checking for 'conda-lock.yml' or 'environment.yml'..." \
     && find ${CONDA_DIR} -follow -type f -name '*.js.map' -delete \
     ; if ls ${NB_PYTHON_PREFIX}/lib/python*/site-packages/bokeh/server/static > /dev/null 2>&1; then \
         find ${NB_PYTHON_PREFIX}/lib/python*/site-packages/bokeh/server/static -follow -type f -name '*.js' ! -name '*.min.js' -delete \
-    ; fi
+    ; fi \
+    && find ${CONDA_DIR} ! -type l ! -perm -777 -exec chmod 777 {} +
 
 # Install pip packages specified in requirements.txt if it exists.
 # We don't want to save cached wheels in the image to avoid wasting space.
@@ -96,7 +101,8 @@ RUN echo "Checking for pip 'requirements.txt'..." \
          && ${CONDA_DIR}/envs/${CONDA_ENV}/bin/pip install --no-cache --use-deprecated=legacy-resolver -r /tmp/build/requirements.txt ; \
        else \
          echo "No pip requirements.txt found" ; \
-       fi
+       fi \
+    && find ${CONDA_DIR} ! -type l ! -perm -777 -exec chmod 777 {} +
 
 # Tell system to use system compiler
 ENV CC=/usr/bin/cc
@@ -126,16 +132,6 @@ RUN apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && . ${CONDA_DIR}/etc/profile.d/conda.sh \
     && conda clean -afy
-
-# Set comprehensive world-writable permissions to allow package installation/modification (note: this recursive permission setting can take a long time...) 
-# Note the PYVERSION thing is no longer needed; was being used for paths to site-packages
-RUN /bin/bash -c "\
-    . ${CONDA_DIR}/etc/profile.d/conda.sh && \
-    conda activate ${CONDA_ENV} && \
-    PYVERSION=\$(python -c 'import sys; print(\"python%d.%d\" % sys.version_info[:2])') && \
-    echo \"Detected Python version: \$PYVERSION\" && \
-    chmod -R 777 ${CONDA_DIR} \
-"
 
 # # Remove all source files except README.md (always fails becuase /tmp/build/ gets deleted by the previous step. Whoops...
 # RUN mkdir -p /media/home \
