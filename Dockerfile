@@ -26,22 +26,6 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Miniforge and conda-lock
-# Each step that writes to ${CONDA_DIR} makes its own new files world-writable (to allow package
-# installation/modification) in the same layer. A separate recursive chmod layer afterwards would
-# store a second copy of every file in ${CONDA_DIR}.
-RUN echo "Installing Miniforge..." \
-    && URL="https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
-    && wget --quiet ${URL} -O installer.sh \
-    && /bin/bash installer.sh -u -b -p ${CONDA_DIR} \
-    && rm installer.sh \
-    && . ${CONDA_DIR}/etc/profile.d/conda.sh \
-    && conda activate base \
-    && mamba install conda-lock -y \
-    && mamba clean -afy \
-    && find ${CONDA_DIR} -follow -type f -name '*.a' -delete \
-    && chmod -R 777 ${CONDA_DIR}
-
 # Create the init_conda.sh script
 RUN echo ". ${CONDA_DIR}/etc/profile.d/conda.sh ; conda activate ${CONDA_ENV}" > /etc/profile.d/init_conda.sh
 
@@ -73,10 +57,25 @@ RUN echo "Checking for 'apt.txt'..." \
         echo "No apt.txt found, skipping apt packages installation." \
     ; fi
 
-# Create conda environment from conda-lock.yml or environment.yml if they exist
-RUN echo "Checking for 'conda-lock.yml' or 'environment.yml'..." \
+# Install Miniforge and conda-lock, create the conda environment from conda-lock.yml or environment.yml
+# if they exist, install pip packages from requirements.txt if it exists, and set world-writable
+# permissions to allow package installation/modification, all in one layer. Separate layers would
+# keep a second copy of every file in ${CONDA_DIR} (for the permissions) and of every conda file that
+# pip replaces. The braces keep the previous exit-status behavior of the environment creation step.
+# We don't want to save cached wheels in the image to avoid wasting space (PIP_NO_CACHE_DIR also
+# covers pip's build-isolation subprocesses, which ignore --no-cache).
+RUN echo "Installing Miniforge..." \
+    && URL="https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh" \
+    && wget --quiet ${URL} -O installer.sh \
+    && /bin/bash installer.sh -u -b -p ${CONDA_DIR} \
+    && rm installer.sh \
     && . ${CONDA_DIR}/etc/profile.d/conda.sh \
-    ; if [ -f "/tmp/build/conda-lock.yml" ]; then \
+    && conda activate base \
+    && mamba install conda-lock -y \
+    && mamba clean -afy \
+    && find ${CONDA_DIR} -follow -type f -name '*.a' -delete \
+    && echo "Checking for 'conda-lock.yml' or 'environment.yml'..." \
+    && { if [ -f "/tmp/build/conda-lock.yml" ]; then \
         echo "Using conda-lock.yml" \
         && conda-lock install --name ${CONDA_ENV} /tmp/build/conda-lock.yml \
     ; elif [ -f "/tmp/build/environment.yml" ]; then \
@@ -90,19 +89,15 @@ RUN echo "Checking for 'conda-lock.yml' or 'environment.yml'..." \
     && find ${CONDA_DIR} -follow -type f -name '*.js.map' -delete \
     ; if ls ${NB_PYTHON_PREFIX}/lib/python*/site-packages/bokeh/server/static > /dev/null 2>&1; then \
         find ${NB_PYTHON_PREFIX}/lib/python*/site-packages/bokeh/server/static -follow -type f -name '*.js' ! -name '*.min.js' -delete \
-    ; fi \
-    && find ${CONDA_DIR} ! -type l ! -perm -777 -exec chmod 777 {} +
-
-# Install pip packages specified in requirements.txt if it exists.
-# We don't want to save cached wheels in the image to avoid wasting space.
-RUN echo "Checking for pip 'requirements.txt'..." \
+    ; fi ; } \
+    && echo "Checking for pip 'requirements.txt'..." \
     && if [ -f "/tmp/build/requirements.txt" ]; then \
          echo "Installing pip packages from requirements.txt" \
-         && ${CONDA_DIR}/envs/${CONDA_ENV}/bin/pip install --no-cache --use-deprecated=legacy-resolver -r /tmp/build/requirements.txt ; \
+         && PIP_NO_CACHE_DIR=1 ${CONDA_DIR}/envs/${CONDA_ENV}/bin/pip install --no-cache --use-deprecated=legacy-resolver -r /tmp/build/requirements.txt ; \
        else \
          echo "No pip requirements.txt found" ; \
        fi \
-    && find ${CONDA_DIR} ! -type l ! -perm -777 -exec chmod 777 {} +
+    && chmod -R 777 ${CONDA_DIR}
 
 # Tell system to use system compiler
 ENV CC=/usr/bin/cc
