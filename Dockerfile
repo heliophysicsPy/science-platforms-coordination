@@ -21,12 +21,6 @@ RUN mkdir -p /opt/survey-core
 COPY Welcome.ipynb /opt/survey-core/
 COPY requirements.txt /opt/survey-core/
 
-# Extract notebooks archive into notebooks directory in opt
-COPY notebooks.tar.gz /tmp/
-RUN mkdir -p /opt/survey-core/notebooks && \
-    tar -xzf /tmp/notebooks.tar.gz -C /opt/survey-core/notebooks && \
-    rm -f /tmp/notebooks.tar.gz
-
 # create PyHC package data dirs in opt directory
 RUN mkdir -p /opt/survey-core/.sunpy /opt/survey-core/.spacepy/data
 
@@ -34,8 +28,13 @@ RUN mkdir -p /opt/survey-core/.sunpy /opt/survey-core/.spacepy/data
 COPY start /opt/survey-core/start
 RUN chmod +x /opt/survey-core/start
 
-# Ensure user (default: jovyan) owns everything in opt with full permissions
-RUN chown -R $NB_USER /opt/survey-core && \
+# Extract notebooks archive into notebooks directory in opt, then ensure user (default: jovyan)
+# owns everything in opt with full permissions. The archive is read from the copy that Pangeo's
+# ONBUILD step already placed in /home/$NB_USER (copying it again would add another 1.2 GB layer),
+# and both happen in one layer so the extracted notebooks are only stored once.
+RUN mkdir -p /opt/survey-core/notebooks && \
+    tar -xzf /home/$NB_USER/notebooks.tar.gz -C /opt/survey-core/notebooks && \
+    chown -R $NB_USER /opt/survey-core && \
     chmod -R 777 /opt/survey-core
 
 # Clean up /home/$NB_USER completely since files will be symlinked from /opt

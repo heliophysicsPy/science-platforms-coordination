@@ -1,0 +1,3 @@
+# Keep Git metadata out of Pangeo's ONBUILD copy of the build context into /home/jovyan (the build
+# workflow checks out with Git LFS, so .git/lfs/objects holds a second copy of notebooks.tar.gz)
+.git
