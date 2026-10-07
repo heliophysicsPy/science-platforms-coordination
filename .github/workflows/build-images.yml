@@ -29,6 +29,14 @@ jobs:
           lfs: false  # the Dockerfile downloads notebooks.tar.gz itself, so skip the LFS download here
           fetch-depth: 0
 
+      - name: Check the Dockerfile's pinned notebooks archive matches notebooks.tar.gz
+        run: |
+          oid=$(sed -n 's/^oid sha256://p' notebooks.tar.gz)
+          if [ -z "$oid" ] || ! grep -q "^ARG NOTEBOOKS_SHA256=$oid$" Dockerfile; then
+            echo "::error::NOTEBOOKS_SHA256 in the Dockerfile doesn't match notebooks.tar.gz (LFS oid: ${oid:-not found}). Update NOTEBOOKS_COMMIT and NOTEBOOKS_SHA256."
+            exit 1
+          fi
+
       - name: Get actual commit SHA
         id: get-sha
         run: |
