@@ -113,6 +113,7 @@ RUN if [ -f "/tmp/build/install_cdflib.sh" ]; then \
         echo "Installing cdflib..." \
         && chmod +x /tmp/build/install_cdflib.sh \
         && /tmp/build/install_cdflib.sh \
+        && rm -rf /tmp/cdf38_1-dist \
     ; else \
         echo "No install_cdflib.sh found, skipping cdflib installation." \
     ; fi
