@@ -11,12 +11,15 @@ ENV CONDA_ENV=notebook \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     CONDA_DIR=/srv/conda \
-    NB_PYTHON_PREFIX=${CONDA_DIR}/envs/${CONDA_ENV} \
-    PATH=${NB_PYTHON_PREFIX}/bin:${CONDA_DIR}/bin:${PATH} \
-    DASK_ROOT_CONFIG=${CONDA_DIR}/etc \
     TZ=UTC \
-    JUPYTER_CONFIG_DIR=/root/.jupyterlab-$DATALAB_ID \
+    JUPYTER_CONFIG_DIR=/root/.jupyterlab-$DATALAB_ID
+
+# Variables that reference other variables need their own ENV instruction, because Docker substitutes
+# the values from before the instruction (references to variables set in the same instruction come out empty)
+ENV NB_PYTHON_PREFIX=${CONDA_DIR}/envs/${CONDA_ENV} \
+    DASK_ROOT_CONFIG=${CONDA_DIR}/etc \
     ENVIRONMENT=". ${CONDA_DIR}/etc/profile.d/conda.sh ; conda activate ${CONDA_ENV}"
+ENV PATH=${NB_PYTHON_PREFIX}/bin:${CONDA_DIR}/bin:${PATH}
 
 # Install basic apt packages and python3-pip
 RUN apt-get update \
