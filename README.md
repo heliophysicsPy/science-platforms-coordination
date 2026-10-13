@@ -4,9 +4,9 @@
 A Docker image inspired by HelioCloud's base image to be used by the Science Platforms Coordination IHDEA working group. 
 
 ### Launch in 2i2c's Binder:
-[![Binder](https://binder.opensci.2i2c.cloud/badge_logo.svg)](https://binder.opensci.2i2c.cloud/v2/gh/heliophysicsPy/science-platforms-coordination/heliocloud-base-2025-update) (small) 
+[![Binder](https://binder.opensci.2i2c.cloud/badge_logo.svg)](https://binder.opensci.2i2c.cloud/v2/gh/heliophysicsPy/science-platforms-coordination/heliocloud-base-2025-update?urlpath=lab/tree/Welcome.ipynb) (small)
 
-[![Binder](https://big.binder.opensci.2i2c.cloud/badge_logo.svg)](https://big.binder.opensci.2i2c.cloud/v2/gh/heliophysicsPy/science-platforms-coordination/heliocloud-base-2025-update) (big—follow instructions on page to request access)
+[![Binder](https://big.binder.opensci.2i2c.cloud/badge_logo.svg)](https://big.binder.opensci.2i2c.cloud/v2/gh/heliophysicsPy/science-platforms-coordination/heliocloud-base-2025-update?urlpath=lab/tree/Welcome.ipynb) (big—follow instructions on page to request access)
 
 (NOTE: these point to the 2025-update branch; revert that before merging back into `heliocloud-base`!)
 
